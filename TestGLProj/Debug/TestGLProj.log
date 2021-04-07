@@ -1,3 +1,4 @@
 ﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
   main.cpp
+main.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
   TestGLProj.vcxproj -> D:\Documents\GitHub\cg-tower-defense\Debug\TestGLProj.exe

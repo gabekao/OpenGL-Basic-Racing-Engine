@@ -15,7 +15,7 @@
 #include <string.h>
 
 Shader shader; // loads our vertex and fragment shaders
-Model *cylinder; //a cylinder 
+Model *playerCar; //a playerCar 
 Model *plane; //a plane
 Model *track; //a track
 glm::mat4 projection; // projection matrix
@@ -79,10 +79,10 @@ void display(void)
 	view = glm::lookAt(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//model =  glm::rotate(angle+=.1, 0.0f,0.0f, 1.0f);
 	
-	cylinder->render(view *model, projection); // Render current active model.
-	// track is a child of the cylinder
+	playerCar->render(view *model, projection); // Render current active model.
+	// track is a child of the playerCar
 	track->render(view * model*glm::translate(0.0f, -5.0f,0.0f), projection);
-	plane->render(view * glm::translate(0.0f,-5.0f,0.0f)*glm::scale(20.0f,1.0f,20.0f), projection);
+	//plane->render(view * glm::translate(0.0f,-5.0f,0.0f)*glm::scale(20.0f,1.0f,20.0f), projection);
 	
 	glutSwapBuffers(); // Swap the buffers.
 	checkError ("display");
@@ -128,8 +128,8 @@ int main(int argc, char** argv)
 	glEnable(GL_DEPTH_TEST);
 
 	
-	cylinder = new Model(&shader, "models/Low_Poly_Sportcar.obj");
-	plane = new Model(&shader, "models/plane.obj");
+	playerCar = new Model(&shader, "models/player_car.obj", "models/");
+	//plane = new Model(&shader, "models/plane.obj");
 	track = new Model(&shader, "models/racetrack1.obj", "models/"); // you must specify the material path for this to load
 	
 
