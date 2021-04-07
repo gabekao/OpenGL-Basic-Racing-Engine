@@ -17,7 +17,7 @@
 Shader shader; // loads our vertex and fragment shaders
 Model *cylinder; //a cylinder 
 Model *plane; //a plane
-Model *sphere; //a sphere
+Model *track; //a track
 glm::mat4 projection; // projection matrix
 glm::mat4 view; // where the camera is looking
 glm::mat4 model; // where the model (i.e., the myModel) is located wrt the camera
@@ -77,10 +77,11 @@ void display(void)
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// camera positioned at 20 on the z axis, looking into the screen down the -Z axis.
 	view = glm::lookAt(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	model =  glm::rotate(angle+=.1, 0.0f,0.0f, 1.0f);
+	//model =  glm::rotate(angle+=.1, 0.0f,0.0f, 1.0f);
+	
 	cylinder->render(view *model, projection); // Render current active model.
-	// sphere is a child of the cylinder
-	sphere->render(view * model*glm::translate(2.0f, 0.0f,0.0f), projection);
+	// track is a child of the cylinder
+	track->render(view * model*glm::translate(0.0f, -5.0f,0.0f), projection);
 	plane->render(view * glm::translate(0.0f,-5.0f,0.0f)*glm::scale(20.0f,1.0f,20.0f), projection);
 	
 	glutSwapBuffers(); // Swap the buffers.
@@ -127,9 +128,9 @@ int main(int argc, char** argv)
 	glEnable(GL_DEPTH_TEST);
 
 	
-	cylinder = new Model(&shader, "models/cylinder.obj");
+	cylinder = new Model(&shader, "models/Low_Poly_Sportcar.obj");
 	plane = new Model(&shader, "models/plane.obj");
-	sphere = new Model(&shader, "models/dodge-challenger_model.obj", "models/"); // you must specify the material path for this to load
+	track = new Model(&shader, "models/racetrack1.obj", "models/"); // you must specify the material path for this to load
 	
 
 	glutMainLoop();
