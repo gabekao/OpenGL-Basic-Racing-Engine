@@ -7,9 +7,11 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include "Model.h"
 #include "Shader.h"
+#include "Camera.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -18,10 +20,13 @@ Shader shader; // loads our vertex and fragment shaders
 Model *playerCar; //a playerCar 
 Model *plane; //a plane
 Model *track; //a track
+Camera *camera;
 glm::mat4 projection; // projection matrix
 glm::mat4 view; // where the camera is looking
 glm::mat4 model; // where the model (i.e., the myModel) is located wrt the camera
-float angle = 0;
+
+
+
 /* report GL errors, if any, to stderr */
 void checkError(const char *functionName)
 {
@@ -50,7 +55,7 @@ void init(void)
 {	
 	// Perspective projection matrix.
 	projection = glm::perspective(45.0f, 800.0f/600.0f, 1.0f, 1000.0f);
-
+	camera = new Camera(glm::vec3(0.f, 70.f, -70.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f));
 	
 	// Load identity matrix into model matrix (no initial translation or rotation)
 	
@@ -69,20 +74,35 @@ void dumpInfo(void)
 	checkError ("dumpInfo");
 }
 
+float angle = -90.f;
 /*This gets called when the OpenGL is asked to display. This is where all the main rendering calls go*/
 void display(void)
 {
-
-	//glm::rot
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// camera positioned at 20 on the z axis, looking into the screen down the -Z axis.
-	view = glm::lookAt(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	//model =  glm::rotate(angle+=.1, 0.0f,0.0f, 1.0f);
+
+
+	// Adding rotation to model matrix
+	//model = glm::rotate(model, glm::radians(10.f), glm::vec3(0.f, 1.f, 0.f));
+
+	glm::mat4 carTrans;
+	carTrans = model * glm::translate(0.f, 0.f, 0.f) * glm::rotate(angle, glm::vec3(0.f, 1.f, 0.f));
+	//camera->changeTarget(glm::vec3(carTrans[3])+ glm::vec3(0.f, 0.f, 1.f));
+	//camera->setPosition(glm::vec3(carTrans[3]) + glm::vec3(0.f, 5.f, -10.f));
+	camera->changeTarget(glm::vec3(carTrans[3]));
+	camera->setLookAt(&view);
+	//view = glm::lookAt(glm::vec3(0.f, 0.f, 30.f), glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
+	//std::cout << glm::to_string(camera->eye) << '\n';
+	//std::cout << glm::to_string(camera->center) << '\n';
+	//std::cout << glm::to_string(camera->up) << '\n';
+
+
 	
-	playerCar->render(view *model, projection); // Render current active model.
+	playerCar->render(view * carTrans, projection); // Render current active model.
+
 	// track is a child of the playerCar
-	track->render(view * model*glm::translate(0.0f, -5.0f,0.0f), projection);
-	//plane->render(view * glm::translate(0.0f,-5.0f,0.0f)*glm::scale(20.0f,1.0f,20.0f), projection);
+	//track->render(view * glm::translate(0.0f, -5.0f,0.0f), projection);
+
+	plane->render(view * glm::translate(0.0f, -1.f,0.0f)*glm::scale(20.0f,1.0f,20.0f), projection);
 	
 	glutSwapBuffers(); // Swap the buffers.
 	checkError ("display");
@@ -104,11 +124,20 @@ void reshape (int w, int h)
 /*Called when a normal key is pressed*/
 void keyboard(unsigned char key, int x, int y)
 {
+	camera->normalControls(key, x, y);
 	switch (key) {
+	case 'w':
+		model = glm::translate(model, glm::vec3(0.f, 0.f, 1.f));
+		break;
 	case 27: // this is an ascii value
 		exit(0);
 		break;	
 	}
+}
+
+void specialKeyboard(int key, int x, int y)
+{
+	camera->specialControls(key, x, y);
 }
 
 int main(int argc, char** argv)
@@ -125,11 +154,12 @@ int main(int argc, char** argv)
 	glutIdleFunc(idle); 
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc (keyboard);
+	glutSpecialFunc(specialKeyboard);
 	glEnable(GL_DEPTH_TEST);
 
-	
+
 	playerCar = new Model(&shader, "models/player_car.obj", "models/");
-	//plane = new Model(&shader, "models/plane.obj");
+	plane = new Model(&shader, "models/plane.obj");
 	track = new Model(&shader, "models/racetrack1.obj", "models/"); // you must specify the material path for this to load
 	
 
