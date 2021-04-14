@@ -26,6 +26,9 @@ glm::mat4 view; // where the camera is looking
 glm::mat4 model; // where the model (i.e., the myModel) is located wrt the camera
 
 
+float deltaTime = 0;
+float lastTime = 0;
+const float FRAME_TIME = 16.6667;
 
 /* report GL errors, if any, to stderr */
 void checkError(const char *functionName)
@@ -57,7 +60,7 @@ void init(void)
 	projection = glm::perspective(45.0f, 800.0f/600.0f, 1.0f, 1000.0f);
 	camera = new Camera(glm::vec3(0.f, 0.f, -30.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
 	// Load identity matrix into model matrix (no initial translation or rotation)
-	
+
 
 	initShader ();
 	initRendering ();
@@ -73,37 +76,36 @@ void dumpInfo(void)
 	checkError ("dumpInfo");
 }
 
-bool initial = false;
-float angle = -90.f;
+
 /*This gets called when the OpenGL is asked to display. This is where all the main rendering calls go*/
 void display(void)
 {
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	float currentTime;
+
+	currentTime = glutGet(GLUT_ELAPSED_TIME);
+
+	if (currentTime > lastTime + FRAME_TIME)
+	{
+		camera->processInputs(&model, FRAME_TIME);
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	// Adding rotation to model matrix
-	//model = glm::rotate(model, glm::radians(10.f), glm::vec3(0.f, 1.f, 0.f));
+		camera->setLookAt(&view);
 
-	glm::mat4 carTrans;
-	carTrans = model * glm::translate(0.f, 0.f, 0.f) * glm::rotate(angle, glm::vec3(0.f, 1.f, 0.f));
-	//camera->changeTarget(glm::vec3(carTrans[3]) + camera->forward);
-	camera->setPosition(glm::vec3(carTrans[3]) + camera->position);
 
-	//camera->changeTarget(glm::vec3(carTrans[3]));
-	camera->setLookAt(&view);
+		playerCar->render(glm::mat4(1.f) * glm::translate(0.f, -2.f, -10.f) * glm::rotate(90.f, glm::vec3(0.f, 1.f, 0.f)), projection); // Render current active model.
 
-	//carTrans = glm::translate(carTrans, )
 
-	
-	playerCar->render(glm::mat4(1.f) * glm::translate(0.f, -2.f, -7.f), projection); // Render current active model.
+		track->render(view * glm::scale(4.f, 4.f, 4.f) * glm::translate(0.0f, -1.0f,45.0f) * glm::rotate(89.f, glm::vec3(0.f, 1.f, 0.f)), projection);
 
-	// track is a child of the playerCar
-	//track->render(view * glm::translate(0.0f, -5.0f,0.0f), projection);
+		//plane->render(view * glm::translate(0.0f, -1.f, 0.0f) * glm::scale(20.0f, 1.0f, 20.0f), projection);
 
-	plane->render(view * glm::translate(0.0f, -1.f,0.0f)*glm::scale(20.0f,1.0f,20.0f), projection);
-	
-	glutSwapBuffers(); // Swap the buffers.
-	checkError ("display");
+		lastTime = currentTime;
+
+		glutSwapBuffers(); // Swap the buffers.
+		checkError("display");
+	}
 }
 
 /*This gets called when nothing is happening (OFTEN)*/
@@ -120,30 +122,14 @@ void reshape (int w, int h)
 }
 
 /*Called when a normal key is pressed*/
-void keyboard(unsigned char key, int x, int y)
+void keyboardDown(unsigned char key, int x, int y)
 {
-	camera->normalControls(key, x, y);
-	std::cout << camera->yaw << '\n';
+	camera->buf[key] = true;
+}
 
-	switch (key) {
-	case 'w':
-		model = glm::translate(model, glm::vec3(0.f, 0.f, 1.f));
-		//view *= glm::rotate(2.f, glm::vec3(0.f, 1.f, 0.f));
-		std::cout << glm::to_string(view) << '\n';
-		break;
-	case 's':
-		model = glm::translate(model, glm::vec3(0.f, 0.f, -1.f));
-		break;
-	case 'a':
-		model *= glm::rotate(2.f, glm::vec3(0.f, 1.f, 0.f));
-		break;
-	case 'd':
-		model *= glm::rotate(-2.f, glm::vec3(0.f, 1.f, 0.f));
-		break;
-	case 27: // this is an ascii value
-		exit(0);
-		break;	
-	}
+void keyboardUp(unsigned char key, int x, int y)
+{
+	camera->buf[key] = false;
 }
 
 void specialKeyboard(int key, int x, int y)
@@ -164,7 +150,8 @@ int main(int argc, char** argv)
 	glutDisplayFunc(display); 
 	glutIdleFunc(idle); 
 	glutReshapeFunc(reshape);
-	glutKeyboardFunc (keyboard);
+	glutKeyboardFunc (keyboardDown);
+	glutKeyboardUpFunc(keyboardUp);
 	glutSpecialFunc(specialKeyboard);
 	glEnable(GL_DEPTH_TEST);
 

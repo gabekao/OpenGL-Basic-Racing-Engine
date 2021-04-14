@@ -2,6 +2,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform2.hpp>
+
+#include <map>
+
 #pragma once
 class Camera
 {
@@ -18,6 +21,9 @@ class Camera
 		float lastFrame = 0.f;
 		float yaw = 90;
 		float pitch = 0;
+
+		std::map<char, bool> buf;
+
 
 		Camera(glm::vec3 e, glm::vec3 c, glm::vec3 u);
 
@@ -41,6 +47,6 @@ class Camera
 
 		void normalControls(int key, int x, int y);
 
-
+		void processInputs(glm::mat4 *model, float delta);
 };
 

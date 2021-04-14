@@ -10,6 +10,11 @@ Camera::Camera(glm::vec3 e, glm::vec3 c, glm::vec3 u)
 	up = u;
 	forward = glm::vec3(0.f, 0.f, 1.f);
 	position = glm::vec3(0.f, 3.f, -10.f);
+
+	//buf.insert(std::pair<char, bool>('w', false));
+	//buf.insert(std::pair<char, bool>('a', false));
+	//buf.insert(std::pair<char, bool>('s', false));
+	//buf.insert(std::pair<char, bool>('d', false));
 }
 
 
@@ -111,4 +116,39 @@ void Camera::normalControls(int key, int x, int y)
 		break;
 	}
 
+}
+
+void Camera::processInputs(glm::mat4 *model, float delta)
+{
+	glm::vec3 direction;
+	delta = delta / 1000.f;
+	if (buf['w'])
+	{
+		*model *= glm::translate(glm::vec3(0.f, 0.f, 0.0001f) * delta);
+		//printf("%f", delta);
+		position += 1.f * forward;
+	}
+	if (buf['s'])
+	{
+		*model *= glm::translate(glm::vec3(0.f, 0.f, -0.0001f) * delta);
+		position -= 1.f * forward;
+	}
+	if (buf['a'] && (buf['w'] || buf['s']))
+	{
+		*model *= glm::rotate(2.f, glm::vec3(0.f, 1.f, 0.f));
+		yaw -= 2;
+		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		direction.y = sin(glm::radians(pitch));
+		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		forward = glm::normalize(direction);
+	}
+	if (buf['d'] && (buf['w'] || buf['s']))
+	{
+		*model *= glm::rotate(-2.f, glm::vec3(0.f, 1.f, 0.f));
+		yaw += 2;
+		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		direction.y = sin(glm::radians(pitch));
+		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		forward = glm::normalize(direction);
+	}
 }
