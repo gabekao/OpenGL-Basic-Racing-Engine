@@ -12,6 +12,13 @@ class Camera
 		glm::vec3 forward;
 		glm::vec3 up;
 
+		glm::vec3 position;
+
+		float deltaTime = 0.f;
+		float lastFrame = 0.f;
+		float yaw = 90;
+		float pitch = 0;
+
 		Camera(glm::vec3 e, glm::vec3 c, glm::vec3 u);
 
 
@@ -27,6 +34,8 @@ class Camera
 		void changeTarget(glm::vec3 target);
 		
 		void setPosition(glm::vec3 pos);
+
+		void applyTranslation(glm::vec3 trans);
 
 		void specialControls(int key, int x, int y);
 
