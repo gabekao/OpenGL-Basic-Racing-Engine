@@ -85,7 +85,7 @@ void display(void)
 	//model = glm::rotate(model, glm::radians(10.f), glm::vec3(0.f, 1.f, 0.f));
 
 	glm::mat4 carTrans;
-	carTrans = model * glm::translate(0.f, 0.f, 0.f) * glm::rotate(angle, glm::vec3(0.f, 1.f, 0.f));
+	//carTrans = model * glm::translate(0.f, 0.f, 0.f) * glm::rotate(angle=1, glm::vec3(0.f, 1.f, 0.f));
 	//camera->changeTarget(glm::vec3(carTrans[3]) + camera->forward);
 	camera->setPosition(glm::vec3(carTrans[3]) + camera->position);
 
@@ -95,7 +95,7 @@ void display(void)
 	//carTrans = glm::translate(carTrans, )
 
 	
-	playerCar->render(glm::mat4(1.f) * glm::translate(0.f, -2.f, -7.f), projection); // Render current active model.
+	playerCar->render(glm::mat4(1.f) * glm::translate(0.f, -2.f, -10.f) * glm::rotate(angle, glm::vec3(0.f, -1.f, 0.f)), projection); // Render current active model.
 
 	// track is a child of the playerCar
 	//track->render(view * glm::translate(0.0f, -5.0f,0.0f), projection);
@@ -125,6 +125,7 @@ void keyboard(unsigned char key, int x, int y)
 	camera->normalControls(key, x, y);
 	std::cout << camera->yaw << '\n';
 
+	key = tolower(key);
 	switch (key) {
 	case 'w':
 		model = glm::translate(model, glm::vec3(0.f, 0.f, 1.f));

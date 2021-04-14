@@ -1,5 +1,4 @@
 ﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
   main.cpp
-G:\Github\cg-racing\include\glm\gtx\string_cast.inl(30,4): warning C4996: 'vsprintf': This function or variable may be unsafe. Consider using vsprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-Camera.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
-  TestGLProj.vcxproj -> G:\Github\cg-racing\Debug\TestGLProj.exe
+D:\Documents\GitHub\cg-tower-defense\include\glm\gtx\string_cast.inl(30,4): warning C4996: 'vsprintf': This function or variable may be unsafe. Consider using vsprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  TestGLProj.vcxproj -> D:\Documents\GitHub\cg-tower-defense\Debug\TestGLProj.exe
