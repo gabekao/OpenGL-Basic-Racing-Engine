@@ -9,3 +9,7 @@
 *.sln.docstates
 *.sdf
 *.opensdf
+
+# Build Files
+Debug/
+TestGLProj/Debug/
