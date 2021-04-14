@@ -1,2 +1,15 @@
+# Visual Studio 2015 cache/options directory
+.vs/
 
-.vs/TestGLProj/v16/ipch/AutoPCH/c3ade1d3683abbe1/MAIN.ipch
+## Visual Studio files
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sdf
+*.opensdf
+
+# Build Files
+Debug/
+TestGLProj/Debug/
