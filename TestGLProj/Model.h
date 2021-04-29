@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+
 #include <vector>
 #include <map>
 #include "tiny_obj_loader.h"
@@ -20,31 +21,42 @@ public:
 
 	};
 
+	struct Properties
+	{
+		float boxWorldPos[6];
+		glm::vec3 position;
+		glm::vec3 center;
+		glm::vec3 size;
+	} properties;
+
+	GLfloat varray[24]; // vertex array containing the vertices of the bounding box
+	float boxVerts[6];
+
+
 	/*
 	@param shader - a pointer to the shader program to use
 	@param filename - the name of the file with the relative directory included
 	@param materialPath - [optional] the relative path to the mtl files. NOTE: if your obj has a mtl file associated with it, this is not optional!
 	*/
-	Model(Shader *shader,  const char* filename, const char* materialPath = NULL); 
+	Model(Shader *shader, Shader* shaderBB, const char* filename, const char* materialPath = NULL);
 	~Model(void){} // default destructor
-	void render(glm::mat4 ModelView, glm::mat4 Projection); // render the model
-	
+	void render(glm::mat4 ModelView, glm::mat4 Projection, bool useMaterial); // render the model
+	void renderBB(glm::mat4 ModelView, glm::mat4 Projection); // render the bounding box model
+	void setProperties(glm::mat4 model);
+
 private:
 	Shader *m_shader; // shader program
+	Shader* m_shaderBB; // shader program for bounding box
 	std::vector<tinyobj::shape_t> shapes; //a list of meshes and their respective materials
 	std::vector<GLuint> m_VBO;// vertex buffer IDs, each corresponding to a shape
 	std::vector<GLuint> m_NBO;// normal buffer IDs, each corresponding to a shape
 	std::vector<GLuint> m_IBO;// index buffer IDs, each corresponding to a shape
+	std::vector<GLuint> m_VBOBB; // vertex buffer IDs for bounding box
+	std::vector<GLuint> m_IBOBB; // index buffer IDs for bounding box
 
 	void updateBuffers(); //initialize your VBO and update when triangles are added
-	
-	
-
-
-
-
-	
-
-
+	void findBounds(); // finds the AABB boundaries (min/max)
+	void setVertices(float values[6]); // Sets vertices for the AABB
+	void updateBuffersBB(); // initializes VBO and IBO for bounding box
 };
 

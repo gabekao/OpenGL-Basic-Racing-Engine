@@ -1,154 +1,129 @@
 #include "Camera.h"
 
-const float STEP = 0.1f;
 
-
-Camera::Camera(glm::vec3 e, glm::vec3 c, glm::vec3 u)
+void Camera::resetFlycam(void)
 {
-	eye = e;
-	center = c;
-	up = u;
-	forward = glm::vec3(0.f, 0.f, 1.f);
-	position = glm::vec3(0.f, 3.f, -10.f);
+	verCam = 0;
+	horCam = 0;
+	camX = 0;
+	camY = 0;
+	camZ = -20;
+}
 
-	//buf.insert(std::pair<char, bool>('w', false));
-	//buf.insert(std::pair<char, bool>('a', false));
-	//buf.insert(std::pair<char, bool>('s', false));
-	//buf.insert(std::pair<char, bool>('d', false));
+void Camera::OnToggleFlycam(Car car)
+{
+	camX = -car.posX - flyCamResetOffset * sin(car.toRad(car.curRotAngle));
+	camZ = -car.posZ - flyCamResetOffset * cos(car.toRad(car.curRotAngle));
+	horCam = -car.curRotAngle;
+}
+
+void Camera::FlycamControls(Car car)
+{
+	horCam += camAngSpeedModifier * camHorDir;
+	verCam += camAngSpeedModifier * camVerDir;
+	camX -= camSpeedModifier * camSpeedDir * sin(car.toRad(horCam));
+	camY += camSpeedModifier * camSpeedDir * sin(car.toRad(verCam));
+	camZ += camSpeedModifier * camSpeedDir * cos(car.toRad(horCam));
 }
 
 
-glm::vec3 Camera::getEye()
+glm::mat4 Camera::SetViewMatrix(Car car)
 {
-	return eye;
+	glm::mat4 view;
+	// Calculate Camera Position
+	float smoothCamTurn = 1;//turnDir* (speed / maxSpeed);
+	cameraPosition = car.GetCarPosition() + glm::vec3(
+		car._3pDistance * sinf(car.toRad(car.modelRotAngle)),		// x camera position
+		car._3pDistance * 0.25f,						// y camera position
+		car._3pDistance * cosf(car.toRad(car.modelRotAngle)));	// z camera position
+
+	if (!flyCamMode) /// Fly camera
+	{
+		//camPosition = glm::translate(camX, camY, camZ);
+		camPosition = glm::translate(0.f, -20.f, 5.f);
+		//view = glm::rotate((float)verCam, 1.0f, 0.0f, 0.0f);	// Vertical camera movement - PITCH
+		view = glm::rotate(90.f, 1.0f, 0.0f, 0.0f);	// Vertical camera movement - PITCH
+		view *= glm::rotate((float)horCam, 0.0f, 1.0f, 0.0f);	// Horizontal camera movement - YAW
+		view *= camPosition;									// Camera position
+	}
+	else /// Follow camera
+	{
+		view = glm::lookAt(cameraPosition, car.GetCarPosition(), glm::vec3(0, 1, 0));
+	}
+	return view;
 }
 
 
-glm::vec3 Camera::getCenter()
+
+
+void Camera::CameraKeyDown(unsigned char key, Car car)
 {
-	return center;
-}
-
-
-glm::vec3 Camera::getUp()
-{
-	return up;
-}
-
-void Camera::setLookAt(glm::mat4 *view)
-{
-	*view = glm::lookAt(position, position + forward, up);
-}
-
-void Camera::setPosition(glm::vec3 pos)
-{
-	eye = pos;
-}
-
-void Camera::changeTarget(glm::vec3 target)
-{
-
-	center = target;// +glm::normalize;
-	forward = glm::normalize(center + eye);
-}
-
-void Camera::applyTranslation(glm::vec3 trans)
-{
-	center += trans;
-}
-
-void Camera::specialControls(int key, int x, int y)
-{
-	const float delta = 0.5f;
-
-	glm::vec3 direction;
-
-
 	switch (key) {
-	case GLUT_KEY_UP: // Arrow key up
-		position += 0.5f * forward;
+		/// FLYCAMERA CONTROLS ///
+	case 'f':	// camera move forward
+		camSpeedDir = 1;
 		break;
-	case GLUT_KEY_DOWN: // Arrow key down
-		position -= 0.5f * forward;
+	case 'v':	// camera move backward
+		camSpeedDir = -1;
 		break;
-	case GLUT_KEY_LEFT: // Arrow key left
-		position -= glm::normalize(glm::cross(forward, up)) * delta;
+	case 'h':	// Reset Fly Cam
+		flyCamMode = true;
+		resetFlycam();
 		break;
-	case GLUT_KEY_RIGHT: // Arrow key right
-		position += glm::normalize(glm::cross(forward, up)) * delta;
-		break;
-	case 27: // this is an ascii value
-		exit(0);
+	case 'c':	// Toggle fly camera and follow
+		flyCamMode = !flyCamMode;
+		OnToggleFlycam(car);
 		break;
 	}
-	
 }
 
-void Camera::normalControls(int key, int x, int y)
+void Camera::CameraKeyUp(unsigned char key)
 {
-	glm::vec3 direction;
-
-
 	switch (key) {
-	case 'w':
-		//view *= glm::rotate(2.f, glm::vec3(0.f, 1.f, 0.f));
-		position += 1.f * forward;
+		/// FLYCAMERA CONTROLS ///
+	case 'f':	// camera move forward
+		camSpeedDir = 0;
 		break;
-	case 's':
-		position -= 1.f * forward;
-		break;
-	case 'a':
-		yaw -= 2;
-		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		direction.y = sin(glm::radians(pitch));
-		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		forward = glm::normalize(direction);
-		break;
-	case 'd':
-		yaw += 2;
-		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		direction.y = sin(glm::radians(pitch));
-		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		forward = glm::normalize(direction);
-		break;
-	case 27: // this is an ascii value
-		exit(0);
+	case 'v':	// camera move backward
+		camSpeedDir = 0;
 		break;
 	}
-
 }
 
-void Camera::processInputs(glm::mat4 *model, float delta)
+void Camera::CameraSpecialInputDown(int key)
 {
-	glm::vec3 direction;
-	delta = delta / 1000.f;
-	if (buf['w'])
+	switch (key)
 	{
-		*model *= glm::translate(glm::vec3(0.f, 0.f, 0.0001f) * delta);
-		//printf("%f", delta);
-		position += 1.f * forward;
+	case GLUT_KEY_UP:
+		camVerDir = -1.0f;
+		break;
+	case GLUT_KEY_DOWN:
+		camVerDir = 1.0f;
+		break;
+	case GLUT_KEY_LEFT:
+		camHorDir = -1.0f;
+		break;
+	case GLUT_KEY_RIGHT:
+		camHorDir = 1.0f;
+		break;
 	}
-	if (buf['s'])
+}
+
+void Camera::CameraSpecialInputUp(int key)
+{
+	switch (key)
 	{
-		*model *= glm::translate(glm::vec3(0.f, 0.f, -0.0001f) * delta);
-		position -= 1.f * forward;
-	}
-	if (buf['a'] && (buf['w'] || buf['s']))
-	{
-		*model *= glm::rotate(2.f, glm::vec3(0.f, 1.f, 0.f));
-		yaw -= 2;
-		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		direction.y = sin(glm::radians(pitch));
-		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		forward = glm::normalize(direction);
-	}
-	if (buf['d'] && (buf['w'] || buf['s']))
-	{
-		*model *= glm::rotate(-2.f, glm::vec3(0.f, 1.f, 0.f));
-		yaw += 2;
-		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		direction.y = sin(glm::radians(pitch));
-		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		forward = glm::normalize(direction);
+	case GLUT_KEY_UP:
+		camVerDir = 0;
+		break;
+	case GLUT_KEY_DOWN:
+		camVerDir = 0;
+		break;
+	case GLUT_KEY_LEFT:
+		camHorDir = 0;
+		break;
+	case GLUT_KEY_RIGHT:
+		camHorDir = 0;
+		break;
 	}
 }

@@ -4,6 +4,16 @@
  in vec3 E;
  in vec3 H;
 
+
+ uniform vec4 lightDiffuse;
+ uniform vec4 lightSpecular; 
+ uniform vec4 lightAmbient;
+ uniform vec4 surfaceDiffuse;
+ uniform vec4 surfaceSpecular;
+ uniform float shininess;
+ uniform vec4 surfaceAmbient;
+ uniform vec4  surfaceEmissive;
+
  out vec4 color2;
 void main()
 {
@@ -15,11 +25,11 @@ void main()
 
     float Kd = max(dot(Normal, Light), 0.0);
     float Ks = pow(max(dot(Half, Normal), 0.0), 80.0);
-    float Ka = 0.0;
+    float Ka = 1.0;
 
-    vec4 diffuse  = Kd * vec4(1,1,1,1); // white
-    vec4 specular = Ks * vec4(0,0,0,1); // black
+    vec4 diffuse  = Kd * surfaceDiffuse;//vec4(1,1,1,1); // white
+    vec4 specular = Ks * surfaceSpecular;//vec4(0,0,0,1); // black
+    vec4 ambient  = Ka * surfaceAmbient;
 
-
-    color2 = diffuse + specular;
+    color2 = ambient + diffuse + specular;
 }

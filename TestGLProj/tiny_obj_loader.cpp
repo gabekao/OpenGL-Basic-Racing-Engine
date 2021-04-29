@@ -262,8 +262,11 @@ void InitMaterial(material_t& material) {
   material.diffuse_texname = "";
   material.specular_texname = "";
   material.normal_texname = "";
+  material.ambient[0] = 0.f;
+  material.ambient[1] = 1.f;
+  material.ambient[2] = 0.f;
   for (int i = 0; i < 3; i ++) {
-    material.ambient[i] = 0.f;
+    //material.ambient[i] = 0.f;
     material.diffuse[i] = 0.f;
     material.specular[i] = 0.f;
     material.transmittance[i] = 0.f;
@@ -569,10 +572,12 @@ LoadObj(
       char namebuf[4096];
       token += 7;
       sscanf(token, "%s", namebuf);
-
       if (material_map.find(namebuf) != material_map.end()) {
+
         material = material_map[namebuf];
+        //InitMaterial(material);
       } else {
+          printf(" Not found\n");
         // { error!! material not found }
         InitMaterial(material);
       }

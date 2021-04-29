@@ -1,52 +1,40 @@
-#include <GL/freeglut_std.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/transform2.hpp>
+#include "Car.h"
 
-#include <map>
-
-#pragma once
 class Camera
 {
-	public:
+private:
 
-		glm::vec3 eye;
-		glm::vec3 center;
-		glm::vec3 forward;
-		glm::vec3 up;
+	glm::vec3 cameraPosition;	// camera pos
+	glm::mat4 camPosition;		// flycamera position matrix
 
-		glm::vec3 position;
+	// Flycam values
+	float verCam = 0;		// flycamera vertical angle
+	float horCam = 0;		// flycamera horizontal angle
+	float camX = 0;		// flycamera x position
+	float camY = 0;		// flycamera y position
+	float camZ = -20;	// flycamera z position
+	float flyCamResetOffset = 7.5;	// flycam magnititudal offset distance behind player after mode toggled
+	float camSpeedModifier = 0.25f;
+	float camAngSpeedModifier = 1.0f;
 
-		float deltaTime = 0.f;
-		float lastFrame = 0.f;
-		float yaw = 90;
-		float pitch = 0;
-
-		std::map<char, bool> buf;
-
-
-		Camera(glm::vec3 e, glm::vec3 c, glm::vec3 u);
-
-
-		glm::vec3 getEye();
-
-		glm::vec3 getCenter();
-
-		glm::vec3 getUp();
+	float camSpeedDir = 0.0f;	// Ranges from -1.0 to 1.0
+	float camVerDir = 0.0f;		// Ranges from -1.0 to 1.0
+	float camHorDir = 0.0f;		// Ranges from -1.0 to 1.0
 
 
-		void setLookAt(glm::mat4 *view);
+	void resetFlycam(void);
+	void OnToggleFlycam(Car car);
+public:
 
-		void changeTarget(glm::vec3 target);
-		
-		void setPosition(glm::vec3 pos);
+	bool flyCamMode = false;	// [first person / flycamera] toggle
+	glm::mat4 SetViewMatrix(Car car);
+	void FlycamControls(Car car);
 
-		void applyTranslation(glm::vec3 trans);
+	void CameraKeyDown(unsigned char key, Car car);
+	void CameraKeyUp(unsigned char key);
+	void CameraSpecialInputDown(int key);
+	void CameraSpecialInputUp(int key);
 
-		void specialControls(int key, int x, int y);
-
-		void normalControls(int key, int x, int y);
-
-		void processInputs(glm::mat4 *model, float delta);
+	
 };
 
