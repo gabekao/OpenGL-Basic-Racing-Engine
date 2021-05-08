@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 #include <string>
 #include <iostream>
 
@@ -18,8 +17,6 @@ private:
 
 	glm::vec3 carPosition;	// car position
 	
-	
-
 
 	/* Functions */
 	float triangleWave(float move);
@@ -27,32 +24,41 @@ private:
 	void updateAngle(float dt);
 	void resetPosition(void);
 	void flipDirection();
+	void onCarCollision();
+
 public:
 	// General
-	float old_t = 0;		// previous time tracker for dt
-	float motionScaler = 2;	// scales speed
-	float _3pDistance = 10.0f;	// Camera distance from car
+	float M_PI = 3.14159265359;		// Pi
+	float old_t = 0;				// Time: Previous time tracker for dt
+	float motionScaler = 2;			// Scaler: Arbitrary value that scales speed
+	float _3pDistance = 10.0f;		// Distance: Camera distance from car in follow mode
 	float carScale = 1.0f;
 	
 	// Steering values
-	float modelRotAngle = 0;
-	float curRotAngle = 0;	// character directional angle
-	float maxRotAngle = 45;	// max turn angle
-	float turnRadius = 0;
-	float carLength = 1;	// crucial for get rotation radius
+	float turnRate = 90.0f;			// Anglular Velocity: Rate at which imaginary steering wheel is turned
+	float modelRotAngle = 0;		// Angle: Rotation of car model with respect to world coordinates (degrees)
+	float curRotAngle = 0;			// Angle: Rotation of front wheels with respect to car model (degrees)
+	float maxRotAngle = 45;			// Angle: Max turn angle (degrees)
+	float turnRadius = 0;			// Length: Ackermann turning radius
+	float carLength = 1;			// Length: Crucial for get rotation radius
 
 	// Movement values
-	float posX = 0;			// character x position
-	float posZ = 0;			// character z position
-	float speed = 0;		// character speed
-	float maxSpeed = 9.0;	// character speed
-	float accel = 1.0;		// car acceleration
+	float posX = 0;					// Position: Car x position relative to world
+	float posZ = 0;					// Position: Car z position relative to world
+	float speed = 0;				// Velocity: Car directional speed relative to model
+	float maxSpeed = 9.0;			// Speed: Arbitrary maximum speed
+	float accel = 1.0;				// Acceleration: Arbitrary car acceleration
 
 	/* Use all bools to have proper multikey controls */
 	// Controls
-	bool isBreaking = false;	// Toggles fast decel
-	float speedDir = 0.0f;		// Ranges from -1.0 to 1.0
-	float turnDir = 0.0f;		// Ranges from -1.0 to 1.0
+	bool isBreaking = false;				// Toggles fast decel
+	bool isAcceleratingForward = false;		// isAcceleratingForward
+	bool isAcceleratingBackward = false;	// isAcceleratingBackward
+	bool isTurningLeft = false;				// isSteeringLeft
+	bool isTurningRight = false;			// isSteeringRight
+
+	float speedDir = 0.0f;					// UnitVector: Ranges from -1.0 to 1.0
+	float turnDir = 0.0f;					// UnitVector: Ranges from -1.0 to 1.0
 
 	bool carCollided = false;
 

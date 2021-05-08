@@ -206,7 +206,7 @@ float angle = 0;
 
 void UseLight()
 {
-	angle += 0.1f;
+	//angle += 0.1f;
 
 	glm::vec4 lightPos;
 	lightPos = glm::rotate(angle, 0.0f, 0.0f, -1.0f) * lightPosition;

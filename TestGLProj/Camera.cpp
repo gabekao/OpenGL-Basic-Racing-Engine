@@ -30,12 +30,16 @@ void Camera::FlycamControls(Car car)
 glm::mat4 Camera::SetViewMatrix(Car car)
 {
 	glm::mat4 view;
+
+	float speedMod = 1 + pow(car.speed / car.maxSpeed, 2);									// Camera fly back modifier
+	if (car.speed <= 1.0f) speedMod = 1.0f;	// Bottom cap car.speed at 1.0f
+	float smoothCamTurn = 0.1f * car.curRotAngle * sqrt(abs(car.speed / car.maxSpeed));		// Camera side swing modifier
+
 	// Calculate Camera Position
-	float smoothCamTurn = 1;//turnDir* (speed / maxSpeed);
 	cameraPosition = car.GetCarPosition() + glm::vec3(
-		car._3pDistance * sinf(car.toRad(car.modelRotAngle)),		// x camera position
-		car._3pDistance * 0.25f,						// y camera position
-		car._3pDistance * cosf(car.toRad(car.modelRotAngle)));	// z camera position
+		speedMod * car._3pDistance * sinf(car.toRad(car.modelRotAngle + smoothCamTurn)),	// x camera position
+		speedMod * car._3pDistance * 0.25f,													// y camera position
+		speedMod * car._3pDistance * cosf(car.toRad(car.modelRotAngle + smoothCamTurn)));	// z camera position
 
 	if (flyCamMode) /// Fly camera
 	{
@@ -56,7 +60,7 @@ glm::mat4 Camera::SetViewMatrix(Car car)
 
 
 
-void Camera::CameraKeyDown(unsigned char key, Car car)
+void Camera::CameraKeyDown(unsigned char key, Car car)	// On key down
 {
 	switch (key) {
 		/// FLYCAMERA CONTROLS ///
@@ -77,7 +81,7 @@ void Camera::CameraKeyDown(unsigned char key, Car car)
 	}
 }
 
-void Camera::CameraKeyUp(unsigned char key)
+void Camera::CameraKeyUp(unsigned char key)	// On key down
 {
 	switch (key) {
 		/// FLYCAMERA CONTROLS ///
