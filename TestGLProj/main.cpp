@@ -86,7 +86,7 @@ void init(void)
 	Car car;
 	Camera camera;
 
-	lightPosition = glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
+	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 
 	initShader();
 	initRendering();
@@ -133,11 +133,12 @@ void display(void)
 		player->setProperties(model);
 
 		// Check if car collided
+		
 		if (CheckCollision())
 			car.carCollided = true;
 		else
 			car.carCollided = false;
-
+			
 		
 		// Use point light
 		UseLight();
@@ -206,7 +207,7 @@ float angle = 0;
 
 void UseLight()
 {
-	angle += 0.1f;
+	angle += 0.002f;
 
 	glm::vec4 lightPos;
 	lightPos = glm::rotate(angle, 0.0f, 0.0f, -1.0f) * lightPosition;
@@ -216,7 +217,6 @@ void UseLight()
 	shader.SetUniform("lightDiffuse", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	shader.SetUniform("lightSpecular", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	shader.SetUniform("lightAmbient", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	//shader.SetUniform("shininess", 20.0f);
 	// Rendering light object
 	light->render(view * glm::translate(lightPos.x, lightPos.y, lightPos.z), projection, false);
 }
@@ -320,7 +320,7 @@ int main(int argc, char** argv)
 	// Provided props
 	plane = new Model(&shader, &shaderBB, "models/racetrackroad.obj", "models/");
 	player = new Model(&shader, &shaderBB, "models/car.obj", "models/", true);
-	box = new Model(&shader, &shaderBB, "models/old/unitcube.obj", "models/old/");
+	box = new Model(&shader, &shaderBB, "models/cube.obj", "models/");
 	wheel = new Model(&shader, &shaderBB, "models/wheel.obj", "models/");
 	light = new Model(&shader, &shaderBB, "models/old/sphere.obj", "models/old/");
 

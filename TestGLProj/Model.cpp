@@ -54,6 +54,7 @@ void Model::render(glm::mat4 ModelView, glm::mat4 Projection, bool useMaterial) 
 	m_shader->SetUniform("ModelView", ModelView);  // send modelview to vertex shader
 	//m_shader->SetUniform("lightPosition", glm::vec4(1.0, 0.0, 0.0, 1.0)); // send light position to vertex shader
 	for(int i = 0; i < shapes.size(); i++){
+		//printf("%s\n", shapes[i].name.c_str());
 		if (useMaterial) {
 			m_shader->SetUniform("surfaceDiffuse", glm::vec4(shapes[i].material.diffuse[0], shapes[i].material.diffuse[1], shapes[i].material.diffuse[2], 1.0));
 			m_shader->SetUniform("surfaceSpecular", glm::vec4(shapes[i].material.specular[0], shapes[i].material.specular[1], shapes[i].material.specular[2], 1.0));
@@ -62,13 +63,15 @@ void Model::render(glm::mat4 ModelView, glm::mat4 Projection, bool useMaterial) 
 			m_shader->SetUniform("surfaceAmbient", glm::vec4(shapes[i].material.ambient[0], shapes[i].material.ambient[1], shapes[i].material.ambient[2], 1.0));
 			m_shader->SetUniform("shininess", shapes[i].material.shininess);
 			m_shader->SetUniform("surfaceEmissive", glm::vec4(shapes[i].material.emission[0], shapes[i].material.emission[1], shapes[i].material.emission[2], 1.0));
+			//printf("Shininess: %f\n", shapes[i].material.shininess);
 		}
 		else {
 			m_shader->SetUniform("surfaceDiffuse", glm::vec4(1, 1, 1, 1));
 			m_shader->SetUniform("surfaceSpecular", glm::vec4(1, 1, 1, 1));
 			m_shader->SetUniform("surfaceAmbient", glm::vec4(1, 1, 1, 1));
-			m_shader->SetUniform("shininess", 1);
+			m_shader->SetUniform("shininess", 1.0f);
 			m_shader->SetUniform("surfaceEmissive", glm::vec4(1, 1, 1, 1));
+			//printf("Shininess: 1\n");
 		}
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[i]); // Bind VBO.
 		glEnableVertexAttribArray((*m_shader)["vertexPosition"]); // Enable vertex attribute.

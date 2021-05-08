@@ -27,7 +27,7 @@ void main()
     float Kd = max(dot(Normal, Light), 0.0);
     //float Ks = pow(max(dot(Half, Normal), 0.0), 80.0);
     float Ks = pow(max(dot(reflect(-Light, Normal),Eye), 0.0), shininess);
-    float Ka = 0.0;
+    float Ka = 0.002;
 
     vec4 diffuse  = Kd * surfaceDiffuse * lightDiffuse;//vec4(1,1,1,1); // white
     vec4 specular = Ks * surfaceSpecular * lightSpecular;//vec4(0,0,0,1); // black

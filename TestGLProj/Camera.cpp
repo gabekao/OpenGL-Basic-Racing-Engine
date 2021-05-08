@@ -40,9 +40,9 @@ glm::mat4 Camera::SetViewMatrix(Car car)
 	if (flyCamMode) /// Fly camera
 	{
 		camPosition = glm::translate(camX, camY, camZ);
-		//camPosition = glm::translate(0.f, -20.f, 5.f);
+		//camPosition = glm::translate(0.f, -10.f, -200.f);
 		view = glm::rotate((float)verCam, 1.0f, 0.0f, 0.0f);	// Vertical camera movement - PITCH
-		//view = glm::rotate(90.f, 1.0f, 0.0f, 0.0f);
+		//view = glm::rotate(0.f, 1.0f, 0.0f, 0.0f);
 		view *= glm::rotate((float)horCam, 0.0f, 1.0f, 0.0f);	// Horizontal camera movement - YAW
 		view *= camPosition;									// Camera position
 	}
