@@ -21,6 +21,12 @@ void Car::updateSpeed(float vel, float dt)
 	float dir = abs(speed) / speed;
 	float breakAccel = -30.0f;
 	float slowDecel = -1.0f;
+	
+	if (carCollided)
+	{
+		flipDirection();
+		speed = -speed;
+	}
 	speed += dt * (isBreaking ? dir * breakAccel :	// Breaks; fast deceleration
 		speedDir != 0 ? speedDir * accel :			// Apply acceleration WRT direction
 		(-0.5 < vel && vel < 0.5) ? (-vel / dt) :	// Set minimum speed
@@ -29,6 +35,14 @@ void Car::updateSpeed(float vel, float dt)
 	Every frame (0.0069444.. seconds):
 		speed = (1 - 3/144) * speed
 	*/
+}
+
+void Car::flipDirection()
+{
+	if (speedDir < 0)
+		speedDir = 1;
+	else
+		speedDir = -1;
 }
 
 // psuedo drag force
@@ -69,6 +83,7 @@ void Car::CarControls(void)
 	modelRotAngle += dt * 180.0f * speed / (M_PI * turnRadius);
 	posX -= dt * (motionScaler)*speed * sin(toRad(modelRotAngle));
 	posZ -= dt * (motionScaler)*speed * cos(toRad(modelRotAngle));
+	
 
 	float r = ((float)rand() / (RAND_MAX)) + 1;	// Max/min padding
 	if (speed > maxSpeed)						// Set max speed
@@ -82,23 +97,19 @@ void Car::CarControls(void)
 }
 
 
-glm::mat4 Car::SetCarModelMatrix(glm::mat4 *oldModel, float *angle)
+glm::mat4 Car::SetCarModelMatrix()
 {
 	glm::mat4 mat;
+
 	// Calculate Model Position
 	carPosition = glm::vec3(posX, -4.275, posZ);
 	mat = glm::translate(carPosition) * glm::rotate(modelRotAngle, 0.0f, 1.0f, 0.0f);
-	*angle = modelRotAngle;
-	/*
-	if (carCollided)
-	{
-		*oldModel = oldMat;
-		speed = 1;
-		carCollided = false;
-	}
-	else
-		oldMat = mat;
-		*/
+
+	if (modelRotAngle > 360)
+		modelRotAngle -= 360;
+	if (modelRotAngle < 0)
+		modelRotAngle += 360;
+
 	return mat;
 }
 

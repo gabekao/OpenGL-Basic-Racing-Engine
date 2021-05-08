@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <array>
 #include "tiny_obj_loader.h"
 #include <string>
 #include "Shader.h"
@@ -23,22 +24,24 @@ public:
 
 	struct Properties
 	{
-		float boxWorldPos[6];
-		glm::vec3 position;
-		glm::vec3 center;
-		glm::vec3 size;
+		glm::vec3 position1;
+		glm::vec3 position2;
+		glm::vec3 position3;
+		glm::vec3 position4;
+		glm::vec3 positions[16];
+		glm::vec3 points[16];
 	} properties;
 
 	GLfloat varray[24]; // vertex array containing the vertices of the bounding box
 	float boxVerts[6];
-
+	bool isPlayer = false;
 
 	/*
 	@param shader - a pointer to the shader program to use
 	@param filename - the name of the file with the relative directory included
 	@param materialPath - [optional] the relative path to the mtl files. NOTE: if your obj has a mtl file associated with it, this is not optional!
 	*/
-	Model(Shader *shader, Shader* shaderBB, const char* filename, const char* materialPath = NULL);
+	Model(Shader *shader, Shader* shaderBB, const char* filename, const char* materialPath = NULL, bool player = false);
 	~Model(void){} // default destructor
 	void render(glm::mat4 ModelView, glm::mat4 Projection, bool useMaterial); // render the model
 	void renderBB(glm::mat4 ModelView, glm::mat4 Projection); // render the bounding box model
@@ -57,6 +60,7 @@ private:
 	void updateBuffers(); //initialize your VBO and update when triangles are added
 	void findBounds(); // finds the AABB boundaries (min/max)
 	void setVertices(float values[6]); // Sets vertices for the AABB
+	void setPoints();
 	void updateBuffersBB(); // initializes VBO and IBO for bounding box
 };
 

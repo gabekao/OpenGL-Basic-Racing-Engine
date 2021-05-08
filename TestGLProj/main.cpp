@@ -32,16 +32,20 @@ Model* player;
 Model* box;
 Model* plane;
 Model* wheel;
+Model* light;
 
 glm::mat4 projection;		// projection matrix
 glm::mat4 view;				// where the camera is lookin
 glm::mat4 model;			// where the model (i.e., the myModel) is located wrt the camera
+glm::vec4 lightPosition;	// Light position
+
 
 float FRAME_TIME = 16.66667;
 float previousTime = 0;
 bool displayBB = false;
 
-bool CheckCollision(glm::mat4 objP, glm::mat4 obj);
+bool CheckCollision();
+void UseLight();
 
 /* report GL errors, if any, to stderr */
 void checkError(const char* functionName)
@@ -81,6 +85,9 @@ void init(void)
 	//view = glm::lookAt(glm::vec3(0.0f, 0.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	Car car;
 	Camera camera;
+
+	lightPosition = glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
+
 	initShader();
 	initRendering();
 }
@@ -101,115 +108,126 @@ int frameCounter = 0;
 void display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	float currentTime = glutGet(GLUT_ELAPSED_TIME);
+
 	if (previousTime + FRAME_TIME > currentTime)
 	{
-		car.CarControls();		// Set model motion values
-		if (camera.flyCamMode)
-			camera.FlycamControls(car);	// Set fly camera motion values
-		
-		float angle;
-		glm::mat4 m;
-		model = car.SetCarModelMatrix(&m, &angle);	// Set Model
-		view = camera.SetViewMatrix(car);	// Set View
+		// Set motion values
+		car.CarControls();
 
+		// Check to see if fly cam is on
+		if (camera.flyCamMode)
+			camera.FlycamControls(car);
+		
+
+		// Create car model matrix and view matrix
+		model = car.SetCarModelMatrix();
+		view = camera.SetViewMatrix(car);
+
+		// Mat4 for collision box test
+		glm::mat4 obj = glm::translate(-1.f, -4.275f, -5.f);
+
+		// Setting collision points for box and player
+		box->setProperties(obj);
+		player->setProperties(model);
+
+		// Check if car collided
+		if (CheckCollision())
+			car.carCollided = true;
+		else
+			car.carCollided = false;
+
+		
+		// Use point light
+		UseLight();
+
+		// Rendering test box
+		box->render(view * obj, projection, false);
+
+		// Rendering race track
+		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(2.f, 2.f, 2.f), projection, true);
 
 		/* Car Rendering */
-
-		//player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
+		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
 		float tireScale = 0.0075f;
-
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 
+
+
 		/* Scenery, props, and terrain rendering */
+		/*
 		float start, sep = 10.0f, len = 160.0f, wid = 40.0f, margin = 10.0f;
 		int tot = (int)((len - 2.0f * margin) / sep);	// Number of wall pieces
 		start = 0.5f * (margin - len);					// Start point
 		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(2.f, 2.f, 2.f), projection, true);	// Plain
-		/*
+		
 		for (int i = 0; i < tot; i++)	// Wall pieces
 		{
 			box->render(view * glm::translate(wid - 0.5f * margin, -4.0f, 2.0f * (start + i * sep)) * glm::scale(3.0f, 4.0f, 3.0f), projection,false);
 			box->render(view * glm::translate(0.5f * margin - wid, -4.0f, 2.0f * (start + i * sep)) * glm::scale(3.0f, 4.0f, 3.0f), projection,false);
 		}*/
 
-		//box->render(view * glm::translate(0.f, -4.275f, -5.f), projection, false);
-
-		glm::mat4 obj = glm::translate(-1.f, -4.275f, -5.f);
-
-		box->setProperties(obj);
-		player->setProperties(model* glm::translate(-player->properties.size.x / 2, 0.f, -player->properties.size.z / 2));
-		glm::mat4 a = model * glm::translate(-player->properties.size.x / 2, 0.f, -player->properties.size.z / 2);
-		if (CheckCollision(model, obj))
-		{
-			if ((frameCounter % 60) == 0)
-			{
-				printf("Collided\n");
-				//std::cout << glm::to_string(model) << std::endl;
-			}
-		}
-		if (!displayBB)
-		{
-			if ((frameCounter % 60) == 0)
-			{
-				//printf("Collided\n");
-				std::cout << glm::to_string(a) << std::endl;
-			}
-			box->renderBB(view * obj, projection);
-			player->renderBB(view * model, projection);
-			//box->renderBB(view *glm::translate(player->properties.position) *
-				//glm::translate(player->properties.center) * glm::rotate(angle, 0.f, 1.f, 0.f) * glm::translate(-player->properties.center), projection);
-			
-			box->renderBB(view * model * glm::translate(-player->properties.size.x/2, 0.f, -player->properties.size.z/2), projection);
-
-			/*
-			printf("Car  -- x: %f, z: %f\n", car.posX, car.posZ);
-			printf("Size -- x: %f, z: %f\n", player->properties.size.x, player->properties.size.z);
-			printf("Box  -- x: %f, z: %f\n", obj[3][0], obj[3][2]);
-			printf("Size -- x: %f, z: %f\n", box->properties.size.x, box->properties.size.z);
-			*/
-		}
-
-		/*
-		//CUSTOM scenery, props, and terrain loading
-		box->render(view * glm::translate(-15.0f, -4.0f, 0.0f) * glm::scale(2.0f, 2.0f, 30.0f), projection);	// Main wall
-		ball->render(view * glm::translate(-6.0f, -4.0f, -8.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection);	// Ball
-		tree->render(view * glm::translate(6.0f, -5.0f, -8.0f) * glm::scale(0.1f, 0.1f, 0.1f), projection);	// TREE
-		coilthing->render(view * glm::translate(-15.0f, -2.0f, 0.0f) * glm::scale(0.05f, 0.05f, 0.05f), projection); // COILTHING
-		trafficcone->render(view * glm::translate(-10.0f, -5.0f, 5.0f) * glm::scale(0.02f, 0.02f, 0.02f), projection);	// TRAFFICCONE
-		wheel->render(view * glm::translate(15.0f, -5.0f, 15.0f) * glm::rotate(-45.0f, 0.0f, 1.0f, 0.0f) * glm::scale(0.02f, 0.02f, 0.02f), projection); // SPAREWHEEL
-		flashlight->render(view * glm::translate(-15.0f, -1.75f, 7.5f) * glm::rotate(-90.0f, 1.0f, 0.0f, 0.0f) * glm::scale(0.02f, 0.02f, 0.02f), projection); // COILTHING
-		*/
+		
 		glutSwapBuffers(); // Swap the buffers.
 		checkError("display");
-		frameCounter++;
+		//frameCounter++;
 	}
 	previousTime = currentTime;
 }
 
-bool CheckCollision(glm::mat4 objP, glm::mat4 obj)
+/*Checks if car collids with one box*/
+bool CheckCollision()
 {
+	// Initialize collisions
+	bool collisionX = false, collisionZ = false;
+	
+	// Check collision based on points on edge of car
+	for (int i = 0; i < 16; i++)
+	{
+		// Check collision on x
+		collisionX = (player->properties.positions[i].x <= box->properties.position2.x &&
+			player->properties.positions[i].x >= box->properties.position1.x);
 
-	//bool collisionX = player->properties.center.x + player->properties.size.x >= box->properties.position.x && 
-		//box->properties.position.x + box->properties.size.x >= player->properties.position.x;
+		// Check collision on z
+		collisionZ = (player->properties.positions[i].z <= box->properties.position2.z &&
+			player->properties.positions[i].z >= box->properties.position1.z);
 
-	bool collisionX = objP[3][0] >= box->properties.position.x &&
-		box->properties.position.x + box->properties.size.x >= objP[3][0];
+		// Return if both true
+		if (collisionX && collisionZ)
+			return true;
+	}
 
-	//bool collisionZ = player->properties.position.z + player->properties.size.z >= box->properties.position.z &&
-		//box->properties.position.z + box->properties.size.z >= player->properties.position.z;
-
-	bool collisionZ = objP[3][2] >= box->properties.position.z &&
-		box->properties.position.z + box->properties.size.z >= objP[3][2];
-
-	return collisionX && collisionZ;
+	return false;
 }
 
+float angle = 0;
+
+void UseLight()
+{
+	angle += 0.1f;
+
+	glm::vec4 lightPos;
+	lightPos = glm::rotate(angle, 0.0f, 0.0f, -1.0f) * lightPosition;
+
+	shader.Activate();
+	shader.SetUniform("lightPosition", view * lightPos);
+	shader.SetUniform("lightDiffuse", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	shader.SetUniform("lightSpecular", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	shader.SetUniform("lightAmbient", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	//shader.SetUniform("shininess", 20.0f);
+	// Rendering light object
+	light->render(view * glm::translate(lightPos.x, lightPos.y, lightPos.z), projection, false);
+}
+
+
+bool stop = false;
 /*This gets called when nothing is happening (OFTEN)*/
 void idle(void)
 {
-	glutPostRedisplay(); // create a display event. Display calls as fast as CPU will allow when put in the idle function
+	if (!stop)
+		glutPostRedisplay(); // create a display event. Display calls as fast as CPU will allow when put in the idle function
 }
 
 /*Called when the window is resized*/
@@ -230,6 +248,9 @@ void KeyDown(unsigned char key, int x, int y)	// Keydown events
 	switch (key){
 	case 'p':
 		displayBB = !displayBB;
+		break;
+	case 'l':
+		stop = !stop;
 		break;
 	}
 }
@@ -298,26 +319,10 @@ int main(int argc, char** argv)
 
 	// Provided props
 	plane = new Model(&shader, &shaderBB, "models/racetrackroad.obj", "models/");
-	player = new Model(&shader, &shaderBB, "models/car.obj", "models/");
+	player = new Model(&shader, &shaderBB, "models/car.obj", "models/", true);
 	box = new Model(&shader, &shaderBB, "models/old/unitcube.obj", "models/old/");
 	wheel = new Model(&shader, &shaderBB, "models/wheel.obj", "models/");
-
-	//ball = new Model(&shader, "models/sphere.obj");
-
-	// Custom props
-	/*
-	tree = new Model(&shader, "models/tree.obj", "models/");
-	coilthing = new Model(&shader, "models/coilthing.obj", "models/");
-	trafficcone = new Model(&shader, "models/trafficcone.obj", "models/");
-	flashlight = new Model(&shader, "models/flashlight.obj", "models/");
-	*/
-	/*
-	torso = new Model(&shader, "models/cylinder.obj"); // Torso
-	//sphere = new Model(&shader, "models/dodge-challenger_model.obj", "models/"); // you must specify the material path for this to load
-	head = new Model(&shader, "models/cylinder.obj", "models/"); // you must specify the material path for this to load
-	limb = new Model(&shader, "models/cylinder.obj", "models/"); // you must specify the material path for this to load
-	*/
-
+	light = new Model(&shader, &shaderBB, "models/old/sphere.obj", "models/old/");
 
 	glutMainLoop();
 

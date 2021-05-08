@@ -26,13 +26,14 @@ private:
 	void updateSpeed(float vel, float dt);
 	void updateAngle(float dt);
 	void resetPosition(void);
+	void flipDirection();
 public:
 	// General
 	float old_t = 0;		// previous time tracker for dt
 	float motionScaler = 2;	// scales speed
 	float _3pDistance = 10.0f;	// Camera distance from car
 	float carScale = 1.0f;
-
+	
 	// Steering values
 	float modelRotAngle = 0;
 	float curRotAngle = 0;	// character directional angle
@@ -46,7 +47,6 @@ public:
 	float speed = 0;		// character speed
 	float maxSpeed = 9.0;	// character speed
 	float accel = 1.0;		// car acceleration
-	glm::mat4 oldMat;		// Old position
 
 	/* Use all bools to have proper multikey controls */
 	// Controls
@@ -62,5 +62,5 @@ public:
 	void CarKeyDown(unsigned char key);
 	void CarKeyUp(unsigned char key);
 	glm::vec3 GetCarPosition();
-	glm::mat4 SetCarModelMatrix(glm::mat4 *oldModel, float *angle);
+	glm::mat4 SetCarModelMatrix();
 };

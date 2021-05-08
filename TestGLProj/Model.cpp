@@ -6,8 +6,10 @@ GLuint indices[]{
 		0,1, 2,3, 4,5, 6,7
 };
 
-Model::Model(Shader *shader, Shader* shaderBB, const char* filename, const char* materialPath)
+Model::Model(Shader *shader, Shader* shaderBB, const char* filename, const char* materialPath, bool player)
 {
+	isPlayer = player;
+
 	m_shader = shader;
 	tinyobj::LoadObj(shapes,filename, materialPath);
 	for(int i = 0; i<shapes.size(); i++){
@@ -50,14 +52,14 @@ void Model::render(glm::mat4 ModelView, glm::mat4 Projection, bool useMaterial) 
 	//update the variables in the shader program
 	m_shader->SetUniform("Projection", Projection); // send projection to vertex shader
 	m_shader->SetUniform("ModelView", ModelView);  // send modelview to vertex shader
-	m_shader->SetUniform("lightPosition", glm::vec4(1.0, 0.0, 0.0, 1.0)); // send light position to vertex shader
+	//m_shader->SetUniform("lightPosition", glm::vec4(1.0, 0.0, 0.0, 1.0)); // send light position to vertex shader
 	for(int i = 0; i < shapes.size(); i++){
 		if (useMaterial) {
 			m_shader->SetUniform("surfaceDiffuse", glm::vec4(shapes[i].material.diffuse[0], shapes[i].material.diffuse[1], shapes[i].material.diffuse[2], 1.0));
 			m_shader->SetUniform("surfaceSpecular", glm::vec4(shapes[i].material.specular[0], shapes[i].material.specular[1], shapes[i].material.specular[2], 1.0));
-			m_shader->SetUniform("surfaceAmbient", glm::vec4(0, 0, 0, 0));
+			//m_shader->SetUniform("surfaceAmbient", glm::vec4(0, 0, 0, 0));
 
-			//m_shader->SetUniform("surfaceAmbient", glm::vec4(shapes[i].material.ambient[0], shapes[i].material.ambient[1], shapes[i].material.ambient[2], 1.0));
+			m_shader->SetUniform("surfaceAmbient", glm::vec4(shapes[i].material.ambient[0], shapes[i].material.ambient[1], shapes[i].material.ambient[2], 1.0));
 			m_shader->SetUniform("shininess", shapes[i].material.shininess);
 			m_shader->SetUniform("surfaceEmissive", glm::vec4(shapes[i].material.emission[0], shapes[i].material.emission[1], shapes[i].material.emission[2], 1.0));
 		}
@@ -65,7 +67,7 @@ void Model::render(glm::mat4 ModelView, glm::mat4 Projection, bool useMaterial) 
 			m_shader->SetUniform("surfaceDiffuse", glm::vec4(1, 1, 1, 1));
 			m_shader->SetUniform("surfaceSpecular", glm::vec4(1, 1, 1, 1));
 			m_shader->SetUniform("surfaceAmbient", glm::vec4(1, 1, 1, 1));
-			m_shader->SetUniform("shininess", 20);
+			m_shader->SetUniform("shininess", 1);
 			m_shader->SetUniform("surfaceEmissive", glm::vec4(1, 1, 1, 1));
 		}
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO[i]); // Bind VBO.
@@ -143,6 +145,7 @@ void Model::findBounds()
 				maxZ = shapes[i].mesh.positions[j + 2];
 		}
 	}
+
 	// Creating an array of the found min/max values to pass to setBounds
 	boxVerts[0] = minX;
 	boxVerts[1] = minY;
@@ -152,6 +155,8 @@ void Model::findBounds()
 	boxVerts[5] = maxZ;
 
 	setVertices(boxVerts);
+	if (isPlayer)
+		setPoints();
 }
 
 
@@ -197,6 +202,45 @@ void Model::setVertices(float values[6])
 }
 
 
+void Model::setPoints()
+{
+	glm::vec3 offset;
+
+	properties.position1 = glm::vec3(boxVerts[0], boxVerts[1], boxVerts[2]);
+	properties.position2 = glm::vec3(boxVerts[3], boxVerts[1], boxVerts[5]);
+	properties.position3 = glm::vec3(boxVerts[3], boxVerts[1], boxVerts[2]);
+	properties.position4 = glm::vec3(boxVerts[0], boxVerts[1], boxVerts[5]);
+
+
+	// Top edge
+	offset = (properties.position3 - properties.position1) / 5.0f;
+	properties.points[0] = properties.position1;
+	properties.points[1] = properties.position1 + offset;
+	properties.points[2] = properties.position1 + offset * 2.0f;
+	properties.points[3] = properties.position1 + offset * 3.0f;
+
+	// Right edge
+	offset = (properties.position2 - properties.position3) / 5.0f;
+	properties.points[4] = properties.position3;
+	properties.points[5] = properties.position3 + offset;
+	properties.points[6] = properties.position3 + offset * 2.0f;
+	properties.points[7] = properties.position3 + offset * 3.0f;
+
+	// Bottom edge
+	offset = (properties.position4 - properties.position2) / 5.0f;
+	properties.points[8] = properties.position2;
+	properties.points[9] = properties.position2 + offset;
+	properties.points[10] = properties.position2 + offset * 2.0f;
+	properties.points[11] = properties.position2 + offset * 3.0f;
+
+	// Left edge
+	offset = (properties.position1 - properties.position4) / 5.0f;
+	properties.points[12] = properties.position4;
+	properties.points[13] = properties.position4 + offset;
+	properties.points[14] = properties.position4 + offset * 2.0f;
+	properties.points[15] = properties.position4 + offset * 3.0f;
+}
+
 /*Attaches the VBO and IBO for the bounding box to the buffers*/
 void Model::updateBuffersBB()
 {
@@ -239,22 +283,17 @@ void Model::renderBB(glm::mat4 ModelView, glm::mat4 Projection)
 
 void Model::setProperties(glm::mat4 pos)
 {
-	properties.boxWorldPos[0] = boxVerts[0] + pos[3][0];
-	properties.boxWorldPos[3] = boxVerts[3] + pos[3][0];
-	properties.size.x = properties.boxWorldPos[3] - properties.boxWorldPos[0];
+	properties.position1 = glm::vec3(pos * glm::vec4(boxVerts[0], boxVerts[1], boxVerts[2], 1));
+	properties.position2 = glm::vec3(pos * glm::vec4(boxVerts[3], boxVerts[1], boxVerts[5], 1));
 
-	properties.boxWorldPos[1] = boxVerts[1] + pos[3][1];
-	properties.boxWorldPos[4] = boxVerts[4] + pos[3][1];
-	properties.size.y = properties.boxWorldPos[4] - properties.boxWorldPos[1];
+	if (isPlayer)
+	{
+		properties.position3 = glm::vec3(pos * glm::vec4(boxVerts[3], boxVerts[1], boxVerts[2], 1));
+		properties.position4 = glm::vec3(pos * glm::vec4(boxVerts[0], boxVerts[1], boxVerts[5], 1));
 
-	properties.boxWorldPos[2] = boxVerts[2] + pos[3][2];
-	properties.boxWorldPos[5] = boxVerts[5] + pos[3][2];
-	properties.size.z = properties.boxWorldPos[5] - properties.boxWorldPos[2];
-
-	properties.center.x = properties.boxWorldPos[0] + properties.size.x / 2;
-	properties.center.y = 0;//properties.boxWorldPos[1] + properties.size.y / 2;
-	properties.center.z = properties.boxWorldPos[2] + properties.size.z / 2;
-
-	properties.position = glm::vec3(properties.boxWorldPos[0], properties.boxWorldPos[1], properties.boxWorldPos[2]);
-	//properties.size = glm::vec3((boxVerts[3] - boxVerts[0]) / 2, (boxVerts[4] - boxVerts[1]) / 2, (boxVerts[5] - boxVerts[2]) / 2);
+		for (int i = 0; i < 16; i++)
+		{
+			properties.positions[i] = glm::vec3(pos * glm::vec4(properties.points[i].x, properties.points[i].y, properties.points[i].z, 1.0));
+		}
+	}
 }

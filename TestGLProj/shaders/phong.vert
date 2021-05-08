@@ -3,9 +3,10 @@ out vec3 N;
 out vec3 L;
 out vec3 E;
 out vec3 H;
+out vec4 eyePosition;
 
-layout(location = 0) in vec3 vertexPosition;
-layout(location = 1) in vec3 vertexNormal;
+in vec3 vertexPosition;
+in vec3 vertexNormal;
 
 uniform vec4 lightPosition;
 uniform mat4 Projection;
