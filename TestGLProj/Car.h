@@ -31,11 +31,11 @@ public:
 	float M_PI = 3.14159265359;		// Pi
 	float old_t = 0;				// Time: Previous time tracker for dt
 	float motionScaler = 2;			// Scaler: Arbitrary value that scales speed
-	float _3pDistance = 10.0f;		// Distance: Camera distance from car in follow mode
+	float _3pDistance = 6.0f;		// Distance: Camera distance from car in follow mode
 	float carScale = 1.0f;
 	
 	// Steering values
-	float turnRate = 90.0f;			// Anglular Velocity: Rate at which imaginary steering wheel is turned
+	float turnRate = 60.0f;			// Anglular Velocity: Rate at which imaginary steering wheel is turned
 	float modelRotAngle = 0;		// Angle: Rotation of car model with respect to world coordinates (degrees)
 	float curRotAngle = 0;			// Angle: Rotation of front wheels with respect to car model (degrees)
 	float maxRotAngle = 45;			// Angle: Max turn angle (degrees)

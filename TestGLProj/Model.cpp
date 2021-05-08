@@ -105,7 +105,6 @@ void Model::updateBuffers()
 		// Fill index buffer with index data.
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, shapes[i].mesh.indices.size() * sizeof(unsigned int), &shapes[i].mesh.indices[0], GL_STATIC_DRAW);
 		
-		
 	}
 
 }

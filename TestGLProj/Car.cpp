@@ -6,7 +6,7 @@ float Car::toRad(float degree)
 	return (degree * (M_PI / 180));
 }
 
-// psuedo drag force
+// Update cars forward motion
 void Car::updateSpeed(float vel, float dt) 
 {
 	float dir = abs(speed) / speed;					// Velocity: Normalize car velocity
@@ -59,15 +59,16 @@ void Car::updateAngle(float dt)
 	curRotAngle += isTurningLeft ? dt * turnRate * cosf(toRad(curRotAngle)) :			// Turn Wheels Left
 		isTurningRight ? dt * -turnRate * cosf(toRad(curRotAngle)) :					// Turn Wheels Right
 		1.0 > curRotAngle && -1.0 < curRotAngle ? -curRotAngle :						// Set Straight
-		-dt * 5.0f * curRotAngle;														// Auto Straighten Wheels
+		-dt * 3.0f * curRotAngle;														// Auto Straighten Wheels
 
 	// Using Unit Vectors
 	//curRotAngle += turnDir != 0 ? dt * turnDir * 180.0f * cosf(toRad(curRotAngle)) :	// Turn Wheels
 	//	1.0 > curRotAngle && -1.0 < curRotAngle ? -curRotAngle :						// Set Straight
 	//	-dt * 5.0f * curRotAngle;														// Auto Straighten Wheels
 
-	if (curRotAngle > maxRotAngle) curRotAngle = maxRotAngle;							// Set max angle
-	if (curRotAngle < -maxRotAngle) curRotAngle = -maxRotAngle;							// Set min angle
+	
+	curRotAngle = min(maxRotAngle, curRotAngle);										// Set max angle
+	curRotAngle = max(-maxRotAngle, curRotAngle);										// Set min angle
 }
 
 /* passing step counter creates a triangle wave output
@@ -142,17 +143,14 @@ void Car::CarKeyDown(unsigned char key)
 	case 'a':	// turn left
 		turnDir = 1;
 		isTurningLeft = true;
-		isTurningRight = false;
 		break;
 	case 'd':	// turn right
 		turnDir = -1;
 		isTurningRight = true;
-		isTurningLeft = false;
 		break;
 	case 'w':	// accel forward
 		speedDir = 1;
 		isAcceleratingForward = true;
-		isAcceleratingBackward = false;
 		break;
 	case 's':	// accel backward
 		speedDir = -1;

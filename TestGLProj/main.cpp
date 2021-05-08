@@ -42,7 +42,8 @@ glm::vec4 lightPosition;	// Light position
 
 float FRAME_TIME = 16.66667;
 float previousTime = 0;
-bool displayBB = false;
+bool displayBB = false;		// Display bounding box
+bool useCTM = false;		// Use Cook-Torrence Model
 
 bool CheckCollision();
 void UseLight();
@@ -155,6 +156,8 @@ void display(void)
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 
+		if (displayBB)
+			player->renderBB(view * model, projection);
 
 
 		/* Scenery, props, and terrain rendering */
@@ -213,6 +216,7 @@ void UseLight()
 	lightPos = glm::rotate(angle, 0.0f, 0.0f, -1.0f) * lightPosition;
 
 	shader.Activate();
+	shader.SetUniform("useCTM", useCTM); // Toggle Cook-Torrance Model
 	shader.SetUniform("lightPosition", view * lightPos);
 	shader.SetUniform("lightDiffuse", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	shader.SetUniform("lightSpecular", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -251,6 +255,9 @@ void KeyDown(unsigned char key, int x, int y)	// Keydown events
 		break;
 	case 'l':
 		stop = !stop;
+		break;
+	case 'm':
+		useCTM = !useCTM;
 		break;
 	}
 }
