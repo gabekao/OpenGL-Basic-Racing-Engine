@@ -10,8 +10,6 @@ float Car::toRad(float degree)
 void Car::updateSpeed(float vel, float dt) 
 {
 	float dir = abs(speed) / speed;					// Velocity: Normalize car velocity
-	float breakAccel = -30.0f;						// Acceleration: Arbitrary break deceleration value
-	float slowDecel = -1.0f;						// Acceleration: Arbitrary rolling halt deceleration
 	
 	if (carCollided)
 	{

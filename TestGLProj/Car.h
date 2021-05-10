@@ -47,6 +47,8 @@ public:
 	float speed = 0;				// Velocity: Car directional speed relative to model
 	float maxSpeed = 9.0;			// Speed: Arbitrary maximum speed
 	float accel = 3.0;				// Acceleration: Arbitrary car acceleration
+	float breakAccel = -10.0f;		// Acceleration: Arbitrary break deceleration value
+	float slowDecel = -1.0f;		// Acceleration: Arbitrary rolling halt deceleration
 
 	/* Use all bools to have proper multikey controls */
 	// Controls

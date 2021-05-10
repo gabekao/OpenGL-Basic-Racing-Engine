@@ -38,7 +38,7 @@ Model* light;
 Text* text;
 
 glm::mat4 projection;		// projection matrix
-glm::mat4 view;				// where the camera is lookin
+glm::mat4 view;				// where the camera is looking
 glm::mat4 model;			// where the model (i.e., the myModel) is located wrt the camera
 glm::vec4 lightPosition;	// Light position
 glm::vec4 spotlightPosisition;
@@ -50,6 +50,17 @@ bool displayBB = false;		// Display bounding box
 bool useCTM = false;		// Use Cook-Torrence Model
 bool stop = false;
 
+
+/* Lighting */
+struct Spotlight
+{
+	glm::vec4 pos, dir;
+} headlights[2];		// Array holding headlights data
+float angle = 0;		// Main light orbit angle
+bool spot = false;		// Main spotlight toggle
+bool lightOn = false;	// Experiment: Spherical car light
+
+// Prototypes
 bool CheckCollision();
 void UseLight();
 
@@ -97,9 +108,14 @@ void init(void)
 
 
 	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
+	
 	spotlightPosisition = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
 	spotlightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
+	headlights[0].pos = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
+	headlights[0].dir = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
+	headlights[1].pos = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
+	headlights[1].dir = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
 	initShader();
 	initRendering();
@@ -228,9 +244,7 @@ bool CheckCollision()
 	return false;
 }
 
-float angle = 0;
-bool spot = false;
-bool lightOn = false;
+
 void UseLight()
 {
 	angle += 0.002f;
@@ -248,16 +262,36 @@ void UseLight()
 
 	if (spot)
 	{
-		// Set stationary spotlight uniforms (pos, dir, angle, exp)
-		shader.SetUniform("spotlightPosition", spotlightPos);
-		shader.SetUniform("spotlightDirection", spotlightDirection);
-		shader.SetUniform("cutOffAngle", 35.0f);
-		shader.SetUniform("spotlightExponent", 10.0f);
+		int aLen = sizeof(headlights) / sizeof(Spotlight);
+		for (int i = 0; i < 1; i++) {
+			//// Set stationary spotlight uniforms (pos, dir, angle, exp)
+			//shader.SetUniform("spotlightPosition", headlights[i].pos);
+			//shader.SetUniform("spotlightDirection", headlights[i].dir);
+			//shader.SetUniform("cutOffAngle", 35.0f);
+			//shader.SetUniform("spotlightExponent", 20.0f);
 
-		// Determines state in fragment shader
-		shader.SetUniform("spotlightActive", spot);
-		shader.SetUniform("flashOn", false);
-		shader.SetUniform("View", view);
+
+			//// Determines state in fragment shader
+			//shader.SetUniform("spotlightActive", spot);
+			//shader.SetUniform("flashOn", false);
+			//shader.SetUniform("View", view);
+			// Set stationary spotlight uniforms (pos, dir, angle, exp)
+			shader.SetUniform("headlightIndex", i);
+
+			shader.SetUniform("headlights[" + to_string(i) + "].position", headlights[i].pos);
+			shader.SetUniform("headlights[" + to_string(i) + "].direction", headlights[i].dir);
+			
+			//shader.SetUniform("spotlightPosition", headlights[i].pos);
+			//shader.SetUniform("spotlightDirection", headlights[i].dir);
+			shader.SetUniform("cutOffAngle", 35.0f);
+			shader.SetUniform("spotlightExponent", 20.0f);
+
+
+			// Determines state in fragment shader
+			shader.SetUniform("spotlightActive", spot);
+			shader.SetUniform("flashOn", false);
+			shader.SetUniform("View", view);
+		}
 	}
 	else
 	{

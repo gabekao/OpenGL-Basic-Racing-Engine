@@ -1,10 +1,15 @@
- #version 440 core
+#version 440 core
+
+#define NUM_HEADLIGHTS 2
+ 
  in vec3 N;
  in vec3 L;
  in vec3 E;
  in vec3 H;
  in vec3 Lspot;
  in vec3 Hspot;
+ in vec3 L_spot[NUM_HEADLIGHTS];
+ in vec3 H_spot[NUM_HEADLIGHTS];
  in vec4 eyePosition;
  out vec4 color;
  
@@ -14,32 +19,59 @@
 uniform bool useCTM;
 
 uniform vec4 lightPosition;
-uniform vec4 spotlightPosition;     // Spotlight position (2nd light)
-uniform vec4 spotlightDirection;    // Spotlight direction
 uniform mat4 Projection;
 uniform mat4 ModelView;
 uniform mat4 View;                  // View matrix
- 
- uniform vec4 lightDiffuse;
- uniform vec4 lightSpecular; 
- uniform vec4 lightAmbient;
- uniform vec4 surfaceDiffuse;
- uniform vec4 surfaceSpecular;
- uniform float shininess;
- uniform vec4 surfaceAmbient;
- uniform vec4  surfaceEmissive;
 
- uniform float cutOffAngle;         // Angle used to determine cutoff
- uniform float spotExponent;        // Spotlight exponent
- uniform bool flashOn;
- uniform bool spotlightActive;
+uniform vec4 lightDiffuse;
+uniform vec4 lightSpecular;
+uniform vec4 lightAmbient;
+uniform vec4 surfaceDiffuse;
+uniform vec4 surfaceSpecular;
+uniform float shininess;
+uniform vec4 surfaceAmbient;
+uniform vec4  surfaceEmissive;
 
- // Prototypes
- vec4 calcPointLight();
- vec4 calcSpotlight();
+// Obsolete
+uniform vec4 spotlightPosition;     // Spotlight position (2nd light)
+uniform vec4 spotlightDirection;    // Spotlight direction
 
 
+uniform int headlightIndex;
+struct Spotlight {
+    vec4 position;                  // Spotlight position (2nd light)
+    vec4 direction;                 // Spotlight direction
+};
+uniform Spotlight headlights[NUM_HEADLIGHTS];
+uniform float cutOffAngle;         // Angle used to determine cutoff
+uniform float spotExponent;        // Spotlight exponent
 
+
+uniform bool flashOn;
+uniform bool spotlightActive;
+
+
+
+// Prototypes
+float GetCTSpec();
+vec4 calcPointLight();
+vec4 calcSpotlight();
+
+void main()
+{
+    // Calculate colors for point light
+    vec4 pointLight = calcPointLight();
+
+    // Calculate colors for spotlight
+    vec4 spotlights[2];
+    if (flashOn || spotlightActive)
+        spotlights[0] = calcSpotlight();
+
+    // Set FragColor to the sum of above values
+    color = surfaceEmissive + pointLight + spotlights[0];
+}
+
+// Calculate K specular
 float GetCTSpec()
 {
     vec3 _N = normalize(N);
@@ -65,20 +97,6 @@ float GetCTSpec()
     // Cook-Torrance Model
     float model_CT = beck_D * gat_G * fres_F / (PI * dot(_V, _N) * dot(_N, _L));
     return model_CT;
-}
-
-void main()
-{
-    // Calculate colors for point light
-    vec4 pointLight = calcPointLight();
-
-    // Calculate colors for spotlight
-    vec4 spotlight;
-    if (flashOn || spotlightActive)
-        spotlight = calcSpotlight();
-
-    // Set FragColor to the sum of above values
-    color = surfaceEmissive + pointLight + spotlight;
 }
 
 // Calculates color from point light
@@ -107,11 +125,14 @@ vec4 calcPointLight()
 // Calculates color from spotlight
 vec4 calcSpotlight()
 {
+    
+    
     // Same as point light, except using spotlight position instead of light position, as well as Hspot
     vec3 Normal = normalize(N);
-    vec3 Light  = normalize(spotlightPosition - eyePosition).xyz;       // Spotlight position
+    vec3 Light  = normalize(headlights[headlightIndex].position - eyePosition).xyz;       // Spotlight position
     vec3 Eye    = normalize(E);
-    vec3 Half   = normalize(Hspot);                                     // Hspot
+    vec3 Half   = normalize(H_spot[headlightIndex]);                                    // Hspot
+    //vec3 Half  = normalize(Hspot);                                     // Hspot
 	
     float Kd = max(dot(Normal, Light), 0.0);
     float Ks = pow(max(dot(reflect(-Light, Normal),Eye), 0.0), shininess);
@@ -127,12 +148,12 @@ vec4 calcSpotlight()
 
     // If stationary spotlight is activate multiply eye position by view inverse
     if (spotlightActive)
-        v = normalize(spotlightPosition - inverse(View) * eyePosition).xyz;
+        v = normalize(headlights[headlightIndex].position - inverse(View) * eyePosition).xyz;
     else
-        v= normalize(spotlightPosition - eyePosition).xyz;
+        v= normalize(headlights[headlightIndex].position - eyePosition).xyz;
 
     // Calculate spotlight angle and spotlight cutoff 
-    float angle = dot(v, normalize(-spotlightDirection).xyz);
+    float angle = dot(v, normalize(-headlights[headlightIndex].direction).xyz);
     float cutoff = radians(cutOffAngle);
 
     // If angle is less than cutoff, generate calculate spotlight effect, else set to 0
