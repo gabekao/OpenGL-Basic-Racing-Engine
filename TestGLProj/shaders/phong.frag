@@ -48,7 +48,6 @@ float GetCTSpec()
     return model_CT;
 }
 
-
 void main()
 {
     vec3 Normal = normalize(N);
