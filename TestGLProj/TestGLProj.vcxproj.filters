@@ -36,6 +36,9 @@
     <ClCompile Include="ModelTwo.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model.h">
@@ -53,6 +56,9 @@
     <ClInclude Include="Car.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\green.frag">
@@ -62,6 +68,12 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="shaders\phong.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="text.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="text.vert">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

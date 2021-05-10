@@ -20,11 +20,13 @@
 
 #include "Car.h"
 #include "Camera.h"
+#include "Text.h"
 
 using namespace std;
 
 Shader shader; // loads our vertex and fragment shaders
 Shader shaderBB; // loads our vertex and fragment shaders
+Shader shaderText;
 
 Car car;
 Camera camera;
@@ -33,6 +35,7 @@ Model* box;
 Model* plane;
 Model* wheel;
 Model* light;
+Text* text;
 
 glm::mat4 projection;		// projection matrix
 glm::mat4 view;				// where the camera is lookin
@@ -44,6 +47,7 @@ float FRAME_TIME = 16.66667;
 float previousTime = 0;
 bool displayBB = false;		// Display bounding box
 bool useCTM = false;		// Use Cook-Torrence Model
+bool stop = false;
 
 bool CheckCollision();
 void UseLight();
@@ -68,6 +72,9 @@ void initShader(void)
 	shaderBB.AddAttribute("vertexPosition");
 	shaderBB.AddAttribute("vertexNormal");
 
+	shaderText.InitializeFromFile("shaders/text.vert", "shaders/text.frag");
+
+
 	checkError("initShader");
 }
 
@@ -87,10 +94,14 @@ void init(void)
 	Car car;
 	Camera camera;
 
+
 	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 
 	initShader();
 	initRendering();
+
+	text = new Text(&shaderText, "fonts/Antonio-Regular.ttf");
+
 }
 
 /* This prints in the console when you start the program*/
@@ -159,7 +170,18 @@ void display(void)
 		if (displayBB)
 			player->renderBB(view * model, projection);
 
+		
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		std::string spd;
+		spd = std::to_string(car.speed);
+		spd = "Speed: " + spd.substr(0, spd.find(".") + 3);
+		text->RenderText(spd, 50.0, 550.0, 0.5, glm::vec3(0.0, 0.0, 0.0));
+
+		glDisable(GL_BLEND);
+		glDisable(GL_CULL_FACE);
 		/* Scenery, props, and terrain rendering */
 		/*
 		float start, sep = 10.0f, len = 160.0f, wid = 40.0f, margin = 10.0f;
@@ -226,7 +248,7 @@ void UseLight()
 }
 
 
-bool stop = false;
+
 /*This gets called when nothing is happening (OFTEN)*/
 void idle(void)
 {
@@ -324,12 +346,15 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(SpecialInputUp);
 	glEnable(GL_DEPTH_TEST);
 
+
 	// Provided props
 	plane = new Model(&shader, &shaderBB, "models/racetrackroad.obj", "models/");
 	player = new Model(&shader, &shaderBB, "models/car.obj", "models/", true);
 	box = new Model(&shader, &shaderBB, "models/cube.obj", "models/");
 	wheel = new Model(&shader, &shaderBB, "models/wheel.obj", "models/");
 	light = new Model(&shader, &shaderBB, "models/old/sphere.obj", "models/old/");
+
+	
 
 	glutMainLoop();
 
