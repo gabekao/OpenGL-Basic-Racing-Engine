@@ -98,7 +98,8 @@ void Car::CarControls(void)
 	modelRotAngle += dt * 180.0f * speed / (M_PI * turnRadius);
 	posX -= dt * (motionScaler)*speed * sin(toRad(modelRotAngle));
 	posZ -= dt * (motionScaler)*speed * cos(toRad(modelRotAngle));
-	
+	//posZ -= 70;
+	//modelRotAngle -= 58;
 
 	float r = ((float)rand() / (RAND_MAX)) + 1;	// Random Max/min padding
 	if (speed > maxSpeed)						// Set max speed

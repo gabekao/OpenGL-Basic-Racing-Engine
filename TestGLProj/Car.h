@@ -35,7 +35,7 @@ public:
 	
 	// Steering values
 	float turnRate = 60.0f;			// Anglular Velocity: Rate at which imaginary steering wheel is turned
-	float modelRotAngle = 0;		// Angle: Rotation of car model with respect to world coordinates (degrees)
+	float modelRotAngle = -58;		// Angle: Rotation of car model with respect to world coordinates (degrees)
 	float curRotAngle = 0;			// Angle: Rotation of front wheels with respect to car model (degrees)
 	float maxRotAngle = 45;			// Angle: Max turn angle (degrees)
 	float turnRadius = 0;			// Length: Ackermann turning radius
@@ -43,7 +43,7 @@ public:
 
 	// Movement values
 	float posX = 0;					// Position: Car x position relative to world
-	float posZ = 0;					// Position: Car z position relative to world
+	float posZ = -70;					// Position: Car z position relative to world
 	float speed = 0;				// Velocity: Car directional speed relative to model
 	float maxSpeed = 9.0;			// Speed: Arbitrary maximum speed
 	float accel = 3.0;				// Acceleration: Arbitrary car acceleration

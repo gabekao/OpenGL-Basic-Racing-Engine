@@ -286,7 +286,7 @@ void Model::renderBB(glm::mat4 ModelView, glm::mat4 Projection)
 void Model::setProperties(glm::mat4 pos)
 {
 	properties.position1 = glm::vec3(pos * glm::vec4(boxVerts[0], boxVerts[1], boxVerts[2], 1));
-	properties.position2 = glm::vec3(pos * glm::vec4(boxVerts[3], boxVerts[1], boxVerts[5], 1));
+	properties.position2 = glm::vec3(pos * glm::vec4(boxVerts[3], boxVerts[4], boxVerts[5], 1));
 
 	if (isPlayer)
 	{
