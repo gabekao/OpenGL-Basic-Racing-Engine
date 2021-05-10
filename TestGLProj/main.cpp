@@ -194,8 +194,8 @@ void display(void)
 		if (displayBB) {
 			player->renderBB(view * model, projection);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			box->render(view * model * glm::translate(-0.6f, 0.1f, -2.7f) * glm::scale(.2f, .2f, .2f), projection, true);
-			box->render(view * model * glm::translate(0.6f, 0.1f, -2.7f) * glm::scale(.2f, .2f, .2f), projection, true);
+			box->render(view * model * glm::translate(glm::vec3(headlights[0].pos)) * glm::scale(.2f, .2f, .2f), projection, true);
+			box->render(view * model * glm::translate(glm::vec3(headlights[1].pos)) * glm::scale(.2f, .2f, .2f), projection, true);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
