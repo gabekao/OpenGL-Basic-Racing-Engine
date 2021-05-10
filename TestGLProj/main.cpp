@@ -190,7 +190,20 @@ void display(void)
 		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection, true);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle + 180, 0.0f, 1.0f, 0.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection, true);
-		
+		// Headlights position
+
+		if (displayBB) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			box->render(view * model * glm::translate(-0.6f, 0.1f, -2.7f) * glm::scale(.2f, .2f, .2f), projection, true);
+			box->render(view * model * glm::translate(0.6f, 0.1f, -2.7f) * glm::scale(.2f, .2f, .2f), projection, true);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+
+		headlights[0].pos = glm::vec4(car.posX, 10.0f, car.posZ + 1.0f, 1.0f);
+		headlights[0].dir = glm::vec4(car.modelRotAngle, 10.0f, car.posZ + 1.0f, 1.0f);
+		headlights[1].pos = glm::vec4(car.posX, 10.0f, car.posZ - 1.0f, 1.0f);
+		headlights[1].dir = glm::vec4(car.posX, 10.0f, car.posZ - 1.0f, 1.0f);
+
 
 		if (displayBB)
 			player->renderBB(view * model, projection);
