@@ -31,9 +31,10 @@ glm::mat4 Camera::SetViewMatrix(Car car)
 {
 	glm::mat4 view;
 
-	float speedMod = 1 + pow(car.speed / car.maxSpeed, 2);									// Camera fly back modifier
+	float swayScaler = 0.5f;																// Swing modifier (Range: 0.0 to 1.0)
+	float speedMod = 1 + swayScaler * pow(car.speed / car.maxSpeed, 2);						// Camera fly back value
 	if (car.speed <= 1.0f) speedMod = 1.0f;	// Bottom cap car.speed at 1.0f
-	float smoothCamTurn = 0.1f * car.curRotAngle * sqrt(abs(car.speed / car.maxSpeed));		// Camera side swing modifier
+	float smoothCamTurn = 0.1f * car.curRotAngle * sqrt(abs(car.speed / car.maxSpeed));		// Camera side swing value
 
 	// Calculate Camera Position
 	cameraPosition = car.GetCarPosition() + glm::vec3(
