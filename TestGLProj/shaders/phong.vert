@@ -12,6 +12,7 @@ uniform vec4 lightPosition;
 uniform mat4 Projection;
 uniform mat4 ModelView;
 
+
 void main()
 {
     gl_Position = Projection * ModelView * vec4(vertexPosition, 1.0);

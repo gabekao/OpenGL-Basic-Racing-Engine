@@ -97,6 +97,8 @@ void init(void)
 
 	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 
+
+
 	initShader();
 	initRendering();
 
@@ -162,7 +164,7 @@ void display(void)
 		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(2.f, 2.f, 2.f), projection, true);
 
 		/* Car Rendering */
-		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
+		player->render(view * glm::rotate(180.0f, 0.0f, 1.0f, 0.0f) * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
 		float tireScale = 0.0075f;
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
@@ -171,17 +173,13 @@ void display(void)
 			player->renderBB(view * model, projection);
 
 		
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		std::string spd;
 		spd = std::to_string(car.speed);
 		spd = "Speed: " + spd.substr(0, spd.find(".") + 3);
 		text->RenderText(spd, 50.0, 550.0, 0.5, glm::vec3(0.0, 0.0, 0.0));
 
-		glDisable(GL_BLEND);
-		glDisable(GL_CULL_FACE);
+		
+
 		/* Scenery, props, and terrain rendering */
 		/*
 		float start, sep = 10.0f, len = 160.0f, wid = 40.0f, margin = 10.0f;
@@ -229,13 +227,14 @@ bool CheckCollision()
 }
 
 float angle = 0;
-
+bool spot = false;
 void UseLight()
 {
 	angle += 0.002f;
 
-	glm::vec4 lightPos;
+	glm::vec4 lightPos, leftLight;
 	lightPos = glm::rotate(angle, 0.0f, 0.0f, -1.0f) * lightPosition;
+
 
 	shader.Activate();
 	shader.SetUniform("useCTM", useCTM); // Toggle Cook-Torrance Model
@@ -245,6 +244,8 @@ void UseLight()
 	shader.SetUniform("lightAmbient", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	// Rendering light object
 	light->render(view * glm::translate(lightPos.x, lightPos.y, lightPos.z), projection, false);
+
+	shader.DeActivate();
 }
 
 
@@ -280,6 +281,9 @@ void KeyDown(unsigned char key, int x, int y)	// Keydown events
 		break;
 	case 'm':
 		useCTM = !useCTM;
+		break;
+	case 'o':
+		spot = !spot;
 		break;
 	}
 }
