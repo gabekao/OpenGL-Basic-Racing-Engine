@@ -114,7 +114,7 @@ void init(void)
 	Car car;
 	Camera camera;
 
-	lightPosition = glm::vec4(0.0f, -100.0f, 0.0f, 1.0f);
+	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	spotlightPosisition = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
 	spotlightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
