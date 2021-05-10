@@ -500,7 +500,7 @@ int main(int argc, char** argv)
 
 	// Provided props
 	plane = new Model(&shader, &shaderBB, "models/racetrackroad.obj", "models/");
-	player = new Model(&shader, &shaderBB, "models/car.obj", "models/", true);
+	player = new Model(&shader, &shaderBB, "models/Dodge_no_wheels.obj", "models/", true);
 	box = new Model(&shader, &shaderBB, "models/cube.obj", "models/");
 	wheel = new Model(&shader, &shaderBB, "models/wheel.obj", "models/");
 	light = new Model(&shader, &shaderBB, "models/old/sphere.obj", "models/old/");
