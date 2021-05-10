@@ -6,8 +6,6 @@ out vec3 N;
 out vec3 L;
 out vec3 E;
 out vec3 H;
-out vec3 Lspot;
-out vec3 Hspot;
 out vec3 L_spot[NUM_HEADLIGHTS];
 out vec3 H_spot[NUM_HEADLIGHTS];
 out vec4 eyePosition;

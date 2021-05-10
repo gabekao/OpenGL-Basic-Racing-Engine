@@ -114,16 +114,14 @@ void init(void)
 	Car car;
 	Camera camera;
 
-
 	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	spotlightPosisition = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
 	spotlightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
-	headlights[0].pos = glm::vec4(-0.6f, 0.1f, -2.7f, 1.0f);
+	headlights[0].pos = glm::vec4(-0.6f, 0.1f, -2.8f, 1.0f);
 	headlights[0].dir = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-	headlights[1].pos = glm::vec4(0.6f, 0.1f, -2.7f, 1.0f);
+	headlights[1].pos = glm::vec4(0.6f, 0.1f, -2.8f, 1.0f);
 	headlights[1].dir = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-
 
 	initShader();
 	initRendering();
@@ -193,21 +191,12 @@ void display(void)
 		// Headlights position
 
 		if (displayBB) {
+			player->renderBB(view * model, projection);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			box->render(view * model * glm::translate(-0.6f, 0.1f, -2.7f) * glm::scale(.2f, .2f, .2f), projection, true);
 			box->render(view * model * glm::translate(0.6f, 0.1f, -2.7f) * glm::scale(.2f, .2f, .2f), projection, true);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-
-		headlights[0].pos = glm::vec4(car.posX, 10.0f, car.posZ + 1.0f, 1.0f);
-		headlights[0].dir = glm::vec4(car.modelRotAngle, 10.0f, car.posZ + 1.0f, 1.0f);
-		headlights[1].pos = glm::vec4(car.posX, 10.0f, car.posZ - 1.0f, 1.0f);
-		headlights[1].dir = glm::vec4(car.posX, 10.0f, car.posZ - 1.0f, 1.0f);
-
-
-		if (displayBB)
-			player->renderBB(view * model, projection);
-
 
 		// String to hold speed
 		std::string spd;
@@ -303,9 +292,8 @@ void UseLight()
 			shader.SetUniform("headlights[" + to_string(i) + "].position", model * headlights[i].pos);
 			shader.SetUniform("headlights[" + to_string(i) + "].direction", model * headlights[i].dir);
 		}
-
-		shader.SetUniform("cutOffAngle", 35.0f);
-		shader.SetUniform("spotlightExponent", 10.0f);
+		shader.SetUniform("cutOffAngle", 20.0f);
+		shader.SetUniform("spotlightExponent", 60.0f);
 
 		// Determines state in fragment shader
 		shader.SetUniform("spotlightActive", spot);
@@ -321,7 +309,7 @@ void UseLight()
 			shader.SetUniform("spotlightPosition", glm::vec4(0.f));
 			shader.SetUniform("spotlightDirection", glm::vec4(0.f, 0.f, -1.f, 0.f));
 			shader.SetUniform("cutOffAngle", 8.0f);
-			shader.SetUniform("spotlightExponent", 30.0f);
+			shader.SetUniform("spotlightExponent", 150.0f);
 
 			// Determines state in fragment shader (sets light on)
 			shader.SetUniform("spotlightActive", spot);

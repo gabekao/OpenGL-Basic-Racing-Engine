@@ -6,8 +6,6 @@
  in vec3 L;
  in vec3 E;
  in vec3 H;
- in vec3 Lspot;
- in vec3 Hspot;
  in vec3 L_spot[NUM_HEADLIGHTS];
  in vec3 H_spot[NUM_HEADLIGHTS];
  in vec4 eyePosition;
@@ -53,7 +51,7 @@ uniform bool spotlightActive;
 
 
 // Prototypes
-float GetCTSpec();
+float GetCTSpec(vec3 _N, vec3 _V, vec3 _L, vec3 _H);
 vec4 calcPointLight();
 vec4 calcSpotlight(Spotlight spot, vec3 _H);
 
@@ -74,12 +72,12 @@ void main()
 }
 
 // Calculate K specular
-float GetCTSpec()
+float GetCTSpec(vec3 _N, vec3 _V, vec3 _L, vec3 _H)
 {
-    vec3 _N = normalize(N);
-    vec3 _V = normalize(E); ////normalize(lightDirection.xyz); // vLight - vSurface
-    vec3 _L = normalize(lightPosition - eyePosition).xyz; ////normalize(vertexDirection.xyz); // vEye - vSurface
-    vec3 _H = normalize(H);
+    //vec3 _N = normalize(N);
+    //vec3 _V = normalize(E); ////normalize(lightDirection.xyz); // vLight - vSurface
+    //vec3 _L = normalize(lightPosition - eyePosition).xyz; ////normalize(vertexDirection.xyz); // vEye - vSurface
+    //vec3 _H = normalize(H);
     
     float roughness = 0.5; // rms slope of the surface microfacets (Values: ~ 0.4 to 5.0)   // Beckerman Distribution
     float eta = 1.0; // Index of refraction (IOR) of conductor (Values: ~ 1.0 to 4.0)       // Fresnel Term
@@ -114,7 +112,7 @@ vec4 calcPointLight()
     float Ka = 0.002;
 
     if (useCTM)
-        Ks = GetCTSpec();
+        Ks = GetCTSpec(Normal, Eye, Light, Half);
 
     vec4 diffuse  = Kd * lightDiffuse*surfaceDiffuse;
     vec4 specular = Ks * lightSpecular*surfaceSpecular;
@@ -133,10 +131,14 @@ vec4 calcSpotlight(Spotlight spot, vec3 _H)
     vec3 Light  = normalize(spot.position - eyePosition).xyz;       // Spotlight position
     vec3 Eye    = normalize(E);
     vec3 Half   = normalize(_H);                                    // Hspot
-    //vec3 Half  = normalize(Hspot);                                     // Hspot
 	
+
     float Kd = max(dot(Normal, Light), 0.0);
     float Ks = pow(max(dot(reflect(-Light, Normal),Eye), 0.0), shininess);
+
+    // Cook-Torrance Model
+    if (useCTM)
+        Ks = GetCTSpec(Normal, Eye, Light, Half);
 
     vec4 diffuse  = Kd * lightDiffuse*surfaceDiffuse;
     vec4 specular = Ks * lightSpecular*surfaceSpecular;

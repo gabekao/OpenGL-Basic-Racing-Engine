@@ -39,7 +39,7 @@ glm::mat4 Camera::SetViewMatrix(Car car)
 	// Calculate Camera Position
 	cameraPosition = car.GetCarPosition() + glm::vec3(
 		speedMod * car._3pDistance * sinf(car.toRad(car.modelRotAngle + smoothCamTurn)),	// x camera position
-		speedMod * car._3pDistance * 0.25f,													// y camera position
+		speedMod * car._3pDistance * 0.3f,													// y camera position
 		speedMod * car._3pDistance * cosf(car.toRad(car.modelRotAngle + smoothCamTurn)));	// z camera position
 
 	if (flyCamMode) /// Fly camera
