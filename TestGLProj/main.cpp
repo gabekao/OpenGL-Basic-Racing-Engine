@@ -48,6 +48,10 @@ struct GameObjects {
 	glm::mat4 model;
 } gameobjects[SIZE];
 
+struct Spotlight {
+	glm::vec4 pos, dir;
+} headlights[2];
+
 glm::mat4 projection;		// projection matrix
 glm::mat4 view;				// where the camera is lookin
 glm::mat4 model;			// where the model (i.e., the myModel) is located wrt the camera
@@ -114,6 +118,11 @@ void init(void)
 	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
 	spotlightPosisition = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
 	spotlightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
+
+	headlights[0].pos = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
+	headlights[0].dir = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
+	headlights[1].pos = glm::vec4(0.0f, 10.0f, 10.0f, 1.0f);
+	headlights[1].dir = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
 
 	initShader();
@@ -277,8 +286,14 @@ void UseLight()
 	if (spot)
 	{
 		// Set stationary spotlight uniforms (pos, dir, angle, exp)
-		shader.SetUniform("spotlightPosition", spotlightPos);
-		shader.SetUniform("spotlightDirection", spotlightDirection);
+		int aLen = sizeof(headlights) / sizeof(Spotlight);
+		for (int i = 0; i < aLen; i++) {
+			shader.SetUniform("headlightIndex", i);
+
+			shader.SetUniform("headlights[" + to_string(i) + "].position", headlights[i].pos);
+			shader.SetUniform("headlights[" + to_string(i) + "].direction", headlights[i].dir);
+		}
+
 		shader.SetUniform("cutOffAngle", 35.0f);
 		shader.SetUniform("spotlightExponent", 10.0f);
 
