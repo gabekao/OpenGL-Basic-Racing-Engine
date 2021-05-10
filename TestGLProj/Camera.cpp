@@ -42,12 +42,12 @@ glm::mat4 Camera::SetViewMatrix(Car car)
 		speedMod * car._3pDistance * 0.25f,													// y camera position
 		speedMod * car._3pDistance * cosf(car.toRad(car.modelRotAngle + smoothCamTurn)));	// z camera position
 
-	if (flyCamMode) /// Fly camera
+	if (!flyCamMode) /// Fly camera
 	{
-		camPosition = glm::translate(camX, camY, camZ);
-		//camPosition = glm::translate(0.f, -10.f, -200.f);
-		view = glm::rotate((float)verCam, 1.0f, 0.0f, 0.0f);	// Vertical camera movement - PITCH
-		//view = glm::rotate(0.f, 1.0f, 0.0f, 0.0f);
+		//camPosition = glm::translate(camX, camY, camZ);
+		camPosition = glm::translate(0.f, -180.f, -0.f);
+		//view = glm::rotate((float)verCam, 1.0f, 0.0f, 0.0f);	// Vertical camera movement - PITCH
+		view = glm::rotate(-90.0f, -1.0f, 0.0f, 0.0f);
 		view *= glm::rotate((float)horCam, 0.0f, 1.0f, 0.0f);	// Horizontal camera movement - YAW
 		view *= camPosition;									// Camera position
 	}

@@ -22,6 +22,8 @@
 #include "Camera.h"
 #include "Text.h"
 
+#define SIZE 24
+
 using namespace std;
 
 Shader shader;		// loads our model vertex and fragment shaders
@@ -35,7 +37,16 @@ Model* box;
 Model* plane;
 Model* wheel;
 Model* light;
+Model* trunk;
+Model* tree;
+Model* trunks[SIZE];
+
 Text* text;
+
+struct GameObjects {
+	Model* obj;
+	glm::mat4 model;
+} gameobjects[SIZE];
 
 glm::mat4 projection;		// projection matrix
 glm::mat4 view;				// where the camera is lookin
@@ -49,9 +60,13 @@ float previousTime = 0;
 bool displayBB = false;		// Display bounding box
 bool useCTM = false;		// Use Cook-Torrence Model
 bool stop = false;
+bool created = false;
 
 bool CheckCollision();
 void UseLight();
+void DrawTerrain();
+void CreateTerrain();
+
 
 /* report GL errors, if any, to stderr */
 void checkError(const char* functionName)
@@ -104,6 +119,7 @@ void init(void)
 	initShader();
 	initRendering();
 
+	// Initializes text class based on provided font
 	text = new Text(&shaderText, "fonts/Antonio-Regular.ttf");
 
 }
@@ -119,7 +135,6 @@ void dumpInfo(void)
 }
 
 
-int frameCounter = 0;
 /*This gets called when the OpenGL is asked to display. This is where all the main rendering calls go*/
 void display(void)
 {
@@ -141,11 +156,10 @@ void display(void)
 		model = car.SetCarModelMatrix();
 		view = camera.SetViewMatrix(car);
 
-		// Mat4 for collision box test
-		glm::mat4 obj = glm::translate(-1.f, -4.275f, -5.f);
+		// Drawing trees
+		DrawTerrain();
 
-		// Setting collision points for box and player
-		box->setProperties(obj);
+		// Setting collision points for player
 		player->setProperties(model);
 
 		// Check if car collided
@@ -159,25 +173,31 @@ void display(void)
 		// Use point light
 		UseLight();
 
-		// Rendering test box
-		box->render(view * obj, projection, false);
 
 		// Rendering race track
-		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection, true);
+		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(2.0f, 2.0f, 2.0f), projection, true);
 
 		/* Car Rendering */
 		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
 		float tireScale = 0.0075f;
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
+		
 
 		if (displayBB)
 			player->renderBB(view * model, projection);
 
-		
+
+		// String to hold speed
 		std::string spd;
+
+		// Convert car speed float to string
 		spd = std::to_string(car.speed);
+
+		// Speed set to two point precision
 		spd = "Speed: " + spd.substr(0, spd.find(".") + 3);
+
+		// Render speed
 		text->RenderText(spd, 50.0, 550.0, 0.5, glm::vec3(0.0, 0.0, 0.0));
 
 		
@@ -198,7 +218,7 @@ void display(void)
 		
 		glutSwapBuffers(); // Swap the buffers.
 		checkError("display");
-		//frameCounter++;
+		
 	}
 	previousTime = currentTime;
 }
@@ -207,30 +227,38 @@ void display(void)
 bool CheckCollision()
 {
 	// Initialize collisions
-	bool collisionX = false, collisionZ = false;
+	bool collisionX = false, collisionY = false, collisionZ = false;
 	
-	// Check collision based on points on edge of car
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < SIZE; i++)
 	{
-		// Check collision on x
-		collisionX = (player->properties.positions[i].x <= box->properties.position2.x &&
-			player->properties.positions[i].x >= box->properties.position1.x);
+		// Check collision based on points on edge of car
+		for (int j = 0; j < 16; j++)
+		{
+			// Check collision on x
+			collisionX = (player->properties.positions[j].x <= gameobjects[i].obj->properties.position2.x &&
+				player->properties.positions[j].x >= gameobjects[i].obj->properties.position1.x);
 
-		// Check collision on z
-		collisionZ = (player->properties.positions[i].z <= box->properties.position2.z &&
-			player->properties.positions[i].z >= box->properties.position1.z);
+			// Check collision on y
+			collisionY = (player->properties.positions[j].y <= gameobjects[i].obj->properties.position2.y &&
+				player->properties.positions[j].y >= gameobjects[i].obj->properties.position1.y);
 
-		// Return if both true
-		if (collisionX && collisionZ)
-			return true;
+			// Check collision on z
+			collisionZ = (player->properties.positions[j].z <= gameobjects[i].obj->properties.position2.z &&
+				player->properties.positions[j].z >= gameobjects[i].obj->properties.position1.z);
+
+			// Return if both true
+			if (collisionX && collisionZ)
+				return true;
+		}
 	}
-
 	return false;
 }
 
 float angle = 0;
 bool spot = false;
 bool lightOn = false;
+
+/*Enables lights to be rendered*/
 void UseLight()
 {
 	angle += 0.002f;
@@ -288,7 +316,84 @@ void UseLight()
 	shader.DeActivate();
 }
 
+/*Initializes tree game objects split into subsections*/
+void CreateTerrain()
+{
+	// Iterator
+	int i = 0;
 
+	// Min/max for x and z
+	int minX, maxX, minZ, maxZ;
+	
+	// Loop for each subsection (3)
+	for (int n = 0; n < 3; n++)
+	{
+		// Depending on subsection, set appropriate min/max
+		if (n == 0)
+		{
+			minX = -30;
+			maxX = 52;
+			minZ = -44;
+			maxZ = 71;
+		}
+		else if (n == 1)
+		{
+			minX = -70;
+			maxX = 40;
+			minZ = -44;
+			maxZ = 36;
+		}
+		else
+		{
+			minX = 26;
+			maxX = 44;
+			minZ = -64;
+			maxZ = 54;
+		}
+
+		// For each subsection create a tree game object
+		for (i = i; i < SIZE/3*(n+1); i++)
+		{
+			// Find a random x and z in range
+			float x = rand() % (maxX + 1) + minX;
+			float z = rand() % (maxZ + 1) + minZ;
+
+			// Create a trunk for collision purposes
+			trunks[i] = new Model(&shader, &shaderBB, "models/trunk.obj", "models/");
+			
+			// Add model to game object
+			gameobjects[i].obj = trunks[i];
+
+			// Add model matrix to game object
+			gameobjects[i].model = glm::translate(x, -5.0f, z);
+
+			// Set collider properties for game object
+			gameobjects[i].obj->setProperties(gameobjects[i].model);
+		}
+	}
+
+}
+
+
+/*Renders tree game objects on the scene*/
+void DrawTerrain()
+{
+	// Check to see if terrain has been created
+	if (!created)
+	{
+		// Create terrain (initiliaze game objects)
+		CreateTerrain();
+		// Set created to true
+		created = true;
+	}
+
+	// Render each game object
+	for (int i = 0; i < SIZE; i++)
+	{
+		gameobjects[i].obj->render(view * gameobjects[i].model, projection, true);
+		tree->render(view * gameobjects[i].model, projection, true);
+	}
+}
 
 /*This gets called when nothing is happening (OFTEN)*/
 void idle(void)
@@ -400,8 +505,9 @@ int main(int argc, char** argv)
 	box = new Model(&shader, &shaderBB, "models/cube.obj", "models/");
 	wheel = new Model(&shader, &shaderBB, "models/wheel.obj", "models/");
 	light = new Model(&shader, &shaderBB, "models/old/sphere.obj", "models/old/");
+	trunk = new Model(&shader, &shaderBB, "models/trunk.obj", "models/");
+	tree = new Model(&shader, &shaderBB, "models/treeleaf.obj", "models/");
 
-	
 
 	glutMainLoop();
 
