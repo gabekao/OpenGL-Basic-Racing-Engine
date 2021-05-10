@@ -188,8 +188,8 @@ void display(void)
 		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection, true);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle + 180, 0.0f, 1.0f, 0.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection, true);
-		// Headlights position
 
+		// Headlights position
 		if (displayBB) {
 			player->renderBB(view * model, projection);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -208,7 +208,26 @@ void display(void)
 		spd = "Speed: " + spd.substr(0, spd.find(".") + 3);
 
 		// Render speed
-		text->RenderText(spd, 50.0, 550.0, 0.5, glm::vec3(0.0, 0.0, 0.0));
+		text->RenderText(spd, 10.0, 560.0, 0.5, glm::vec3(1.0, 1.0, 1.0));
+
+		// String to hold timer
+		std::string timer, sec, ms;
+
+		// Format time by seconds
+		if (currentTime > 10.0)
+			timer = to_string(currentTime / 1000.0).substr(0, 4);
+		else if (currentTime > 100.0)
+			timer = to_string(currentTime / 1000.0).substr(0, 5);
+		else
+			timer = to_string(currentTime / 1000.0).substr(0, 2);
+
+		// Convert timer float to string
+		timer = "Timer: " + timer;
+
+		// Render timer
+		text->RenderText(timer, 360.0, 560.0, 0.5, glm::vec3(1.0, 1.0, 1.0));
+
+
 
 		/* Scenery, props, and terrain rendering */
 		/*
