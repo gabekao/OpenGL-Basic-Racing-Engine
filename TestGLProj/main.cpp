@@ -114,14 +114,14 @@ void init(void)
 	Car car;
 	Camera camera;
 
-	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
+	lightPosition = glm::vec4(0.0f, -100.0f, 0.0f, 1.0f);
 	spotlightPosisition = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
 	spotlightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
-	headlights[0].pos = glm::vec4(-0.6f, 0.1f, -2.8f, 1.0f);
-	headlights[0].dir = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-	headlights[1].pos = glm::vec4(0.6f, 0.1f, -2.8f, 1.0f);
-	headlights[1].dir = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+	headlights[0].pos = glm::vec4(-0.6f, 0.0f, -2.5f, 1.0f);
+	headlights[0].dir = glm::vec4(-0.1f, -0.18f, -1.0f, 0.0f);
+	headlights[1].pos = glm::vec4(0.6f, 0.0f, -2.5f, 1.0f);
+	headlights[1].dir = glm::vec4(0.1f, -0.18f, -1.0f, 0.0f);
 
 	initShader();
 	initRendering();
@@ -290,9 +290,9 @@ void UseLight()
 			shader.SetUniform("headlightIndex", i);
 
 			shader.SetUniform("headlights[" + to_string(i) + "].position", model * headlights[i].pos);
-			shader.SetUniform("headlights[" + to_string(i) + "].direction", model * headlights[i].dir);
+			shader.SetUniform("headlights[" + to_string(i) + "].direction", glm::normalize(model * headlights[i].dir));
 		}
-		shader.SetUniform("cutOffAngle", 20.0f);
+		shader.SetUniform("cutOffAngle", 15.0f);
 		shader.SetUniform("spotlightExponent", 60.0f);
 
 		// Determines state in fragment shader
