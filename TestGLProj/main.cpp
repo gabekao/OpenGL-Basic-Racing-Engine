@@ -100,7 +100,7 @@ void initShader(void)
 
 void initRendering(void)
 {
-	glClearColor(0.117f, 0.565f, 1.0f, 0.0f); // Dodger Blue
+	glClearColor(0.0f, 0.8f, 0.8f, 0.0f);
 	checkError("initRendering");
 }
 
@@ -227,20 +227,6 @@ void display(void)
 		// Render timer
 		text->RenderText(timer, 360.0, 560.0, 0.5, glm::vec3(1.0, 1.0, 1.0));
 
-
-
-		/* Scenery, props, and terrain rendering */
-		/*
-		float start, sep = 10.0f, len = 160.0f, wid = 40.0f, margin = 10.0f;
-		int tot = (int)((len - 2.0f * margin) / sep);	// Number of wall pieces
-		start = 0.5f * (margin - len);					// Start point
-		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(2.f, 2.f, 2.f), projection, true);	// Plain
-		
-		for (int i = 0; i < tot; i++)	// Wall pieces
-		{
-			box->render(view * glm::translate(wid - 0.5f * margin, -4.0f, 2.0f * (start + i * sep)) * glm::scale(3.0f, 4.0f, 3.0f), projection,false);
-			box->render(view * glm::translate(0.5f * margin - wid, -4.0f, 2.0f * (start + i * sep)) * glm::scale(3.0f, 4.0f, 3.0f), projection,false);
-		}*/
 
 		
 		glutSwapBuffers(); // Swap the buffers.
