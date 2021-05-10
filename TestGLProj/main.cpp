@@ -119,10 +119,10 @@ void init(void)
 	spotlightPosisition = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
 	spotlightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
-	headlights[0].pos = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
-	headlights[0].dir = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
-	headlights[1].pos = glm::vec4(0.0f, 10.0f, 10.0f, 1.0f);
-	headlights[1].dir = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
+	headlights[0].pos = glm::vec4(-0.6f, 0.1f, -2.7f, 1.0f);
+	headlights[0].dir = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+	headlights[1].pos = glm::vec4(0.6f, 0.1f, -2.7f, 1.0f);
+	headlights[1].dir = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
 
 
 	initShader();
@@ -221,8 +221,6 @@ void display(void)
 		// Render speed
 		text->RenderText(spd, 50.0, 550.0, 0.5, glm::vec3(0.0, 0.0, 0.0));
 
-		
-
 		/* Scenery, props, and terrain rendering */
 		/*
 		float start, sep = 10.0f, len = 160.0f, wid = 40.0f, margin = 10.0f;
@@ -302,8 +300,8 @@ void UseLight()
 		for (int i = 0; i < aLen; i++) {
 			shader.SetUniform("headlightIndex", i);
 
-			shader.SetUniform("headlights[" + to_string(i) + "].position", headlights[i].pos);
-			shader.SetUniform("headlights[" + to_string(i) + "].direction", headlights[i].dir);
+			shader.SetUniform("headlights[" + to_string(i) + "].position", model * headlights[i].pos);
+			shader.SetUniform("headlights[" + to_string(i) + "].direction", model * headlights[i].dir);
 		}
 
 		shader.SetUniform("cutOffAngle", 35.0f);
