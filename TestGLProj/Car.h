@@ -14,7 +14,6 @@ class Car
 {
 private:
 
-
 	glm::vec3 carPosition;	// car position
 	
 
@@ -31,7 +30,7 @@ public:
 	float M_PI = 3.14159265359;		// Pi
 	float old_t = 0;				// Time: Previous time tracker for dt
 	float motionScaler = 2;			// Scaler: Arbitrary value that scales speed
-	float _3pDistance = 6.0f;		// Distance: Camera distance from car in follow mode
+	float _3pDistance = 10.0f;		// Distance: Camera distance from car in follow mode
 	float carScale = 1.0f;
 	
 	// Steering values
@@ -47,7 +46,7 @@ public:
 	float posZ = 0;					// Position: Car z position relative to world
 	float speed = 0;				// Velocity: Car directional speed relative to model
 	float maxSpeed = 9.0;			// Speed: Arbitrary maximum speed
-	float accel = 1.0;				// Acceleration: Arbitrary car acceleration
+	float accel = 3.0;				// Acceleration: Arbitrary car acceleration
 
 	/* Use all bools to have proper multikey controls */
 	// Controls

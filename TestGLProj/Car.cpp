@@ -18,7 +18,8 @@ void Car::updateSpeed(float vel, float dt)
 		flipDirection();
 		speed = -speed;
 	}
-	
+	if (abs(speed) == 0.0f)
+		isBreaking = false;
 	// Using Bools
 	speed += dt * (isBreaking ? dir * breakAccel :	// Breaks; fast deceleration
 		isAcceleratingForward ? accel :				// Apply forward force
@@ -107,7 +108,7 @@ void Car::CarControls(void)
 	if (speed < -0.5 * maxSpeed)				// Set min speed
 		speed = -0.5 * (maxSpeed - r);
 	
-	string s = (isBreaking ? "[Breaking]" : speedDir > 0 ? "[Gas]" : speedDir < 0 ? "[Reverse]" : "");
+	//string s = (isBreaking ? "[Breaking]" : speedDir > 0 ? "[Gas]" : speedDir < 0 ? "[Reverse]" : "");
 	//cout << speed << "mph \t" << s << endl;
 	//cout << speed << endl;
 }
@@ -158,7 +159,7 @@ void Car::CarKeyDown(unsigned char key)
 		break;
 	case 'b':	// breaks
 		isBreaking = true;
-		speedDir = 0;
+		//speedDir = 0;
 		break;
 	case 'r':	// Reset Model Position
 		resetPosition();

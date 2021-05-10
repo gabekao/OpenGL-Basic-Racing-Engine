@@ -164,7 +164,7 @@ void display(void)
 		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(2.f, 2.f, 2.f), projection, true);
 
 		/* Car Rendering */
-		player->render(view * glm::rotate(180.0f, 0.0f, 1.0f, 0.0f) * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
+		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
 		float tireScale = 0.0075f;
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
