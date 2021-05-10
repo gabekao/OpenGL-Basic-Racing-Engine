@@ -40,6 +40,7 @@ Model* light;
 Model* trunk;
 Model* tree;
 Model* trunks[SIZE];
+Model* roadblocks[SIZE];
 
 Text* text;
 
@@ -217,7 +218,7 @@ void display(void)
 		if (currentTime > 10.0)
 			timer = to_string(currentTime / 1000.0).substr(0, 4);
 		else if (currentTime > 100.0)
-			timer = to_string(currentTime / 1000.0).substr(0, 5);
+			timer = to_string(currentTime / 1000.0).substr(0, 6);
 		else
 			timer = to_string(currentTime / 1000.0).substr(0, 2);
 
@@ -390,6 +391,15 @@ void CreateTerrain()
 		}
 	}
 
+	roadblocks[0] = new Model(&shader, &shaderBB, "models/roadblock.obj", "models/");
+	roadblocks[1] = new Model(&shader, &shaderBB, "models/roadblock.obj", "models/");
+	roadblocks[2] = new Model(&shader, &shaderBB, "models/roadblock.obj", "models/");
+	roadblocks[3] = new Model(&shader, &shaderBB, "models/roadblock.obj", "models/");
+	roadblocks[4] = new Model(&shader, &shaderBB, "models/roadblock.obj", "models/");
+	roadblocks[5] = new Model(&shader, &shaderBB, "models/roadblock.obj", "models/");
+	roadblocks[6] = new Model(&shader, &shaderBB, "models/roadblock.obj", "models/");
+	roadblocks[7] = new Model(&shader, &shaderBB, "models/roadblock.obj", "models/");
+
 }
 
 
@@ -411,6 +421,8 @@ void DrawTerrain()
 		gameobjects[i].obj->render(view * gameobjects[i].model, projection, true);
 		tree->render(view * gameobjects[i].model, projection, true);
 	}
+
+	roadblocks[0]->render(view * glm::translate(-10.0f, 0.0f, -72.0f), projection, true);
 }
 
 /*This gets called when nothing is happening (OFTEN)*/
