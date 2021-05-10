@@ -79,9 +79,9 @@ float GetCTSpec(vec3 _N, vec3 _V, vec3 _L, vec3 _H)
     //vec3 _L = normalize(lightPosition - eyePosition).xyz; ////normalize(vertexDirection.xyz); // vEye - vSurface
     //vec3 _H = normalize(H);
     
-    float roughness = 0.5; // rms slope of the surface microfacets (Values: ~ 0.4 to 5.0)   // Beckerman Distribution
-    float eta = 1.0; // Index of refraction (IOR) of conductor (Values: ~ 1.0 to 4.0)       // Fresnel Term
-    float k_a = 1.0; // absorption coef of conductor (Values: ~ 1.0 to 4.0)                 // Fresnel Term
+    float roughness = 0.3; // rms slope of the surface microfacets (Values: ~ 0.4 to 5.0)   // Beckerman Distribution
+    float eta = 2.0; // Index of refraction (IOR) of conductor (Values: ~ 1.0 to 4.0)       // Fresnel Term
+    float k_a = 2.0; // absorption coef of conductor (Values: ~ 1.0 to 4.0)                 // Fresnel Term
     
     // Beckerman distribution
     float alpha = acos(dot(_N, _H));
@@ -137,8 +137,8 @@ vec4 calcSpotlight(Spotlight spot, vec3 _H)
     float Ks = pow(max(dot(reflect(-Light, Normal),Eye), 0.0), shininess);
 
     // Cook-Torrance Model
-    if (useCTM)
-        Ks = GetCTSpec(Normal, Eye, Light, Half);
+    //if (useCTM)
+    //    Ks = GetCTSpec(Normal, Eye, Light, Half);
 
     vec4 diffuse  = Kd * lightDiffuse*surfaceDiffuse;
     vec4 specular = Ks * lightSpecular*surfaceSpecular;
