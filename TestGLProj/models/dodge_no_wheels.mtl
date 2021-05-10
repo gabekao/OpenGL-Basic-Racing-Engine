@@ -1,0 +1,290 @@
+# Blender MTL File: 'None'
+# Material Count: 25
+
+newmtl Black_glass_glasses_lines.png
+Ns 894.388700
+Ka 1.000000 1.000000 1.000000
+Kd 0.003766 0.003766 0.003766
+Ks 0.169930 0.169930 0.169930
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.500000
+illum 9
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\glasses_lines.png
+
+newmtl CarPaint_col_body.png
+Ns 358.823536
+Ka 1.000000 1.000000 1.000000
+Kd 0.887923 0.830770 0.034340
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\col_body.png
+
+newmtl blinkers_blinkers.png
+Ns 13.725486
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\blinkers_SMALL.png
+
+newmtl body_mat_col_body.png
+Ns 29.411772
+Ka 1.000000 1.000000 1.000000
+Kd 0.004187 0.004187 0.004187
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\col_body.png
+
+newmtl brake_disk_ao_brake_disk
+Ns 437.500001
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.600000 0.600000 0.600000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_brake_disk_SMALL.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\ao_brake_disk.png
+
+newmtl brake_disk_diff_brake_disk.png
+Ns 437.500001
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.600000 0.600000 0.600000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_brake_disk_SMALL.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_brake_disk_SMALL.png
+
+newmtl chassis_diff_chassis.png
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 0.160000 0.160000 0.160000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_chassis.png
+
+newmtl chrome_col_body.png
+Ns 570.588225
+Ka 1.000000 1.000000 1.000000
+Kd 0.448000 0.448000 0.461440
+Ks 0.479667 0.479667 0.479667
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\col_body.png
+
+newmtl chrome_roller_diff_roller.png
+Ns 570.588225
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.824000
+Ks 0.959333 0.959333 0.959333
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_roller.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_roller.png
+
+newmtl chrome_window
+Ns 570.588225
+Ka 1.000000 1.000000 1.000000
+Kd 0.009981 0.009981 0.010280
+Ks 0.479667 0.479667 0.479667
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_window.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\refl_sky_EXTRASMALL.png
+
+newmtl chrome_window_nor_window.png
+Ns 570.588225
+Ka 1.000000 1.000000 1.000000
+Kd 0.009981 0.009981 0.010280
+Ks 0.479667 0.479667 0.479667
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_window.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\nor_window.png
+
+newmtl essence_cap
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.183859 0.183859 0.189375
+Ks 0.460480 0.460480 0.460480
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_cap.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\refl_sky_EXTRASMALL.png
+
+newmtl exhaust_diff_exhaust.png
+Ns 76.470601
+Ka 1.000000 1.000000 1.000000
+Kd 0.008768 0.008768 0.008768
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_exhaust.png
+
+newmtl glass_mat
+Ns 56.862747
+Ka 1.000000 1.000000 1.000000
+Kd 0.000090 0.000090 0.000090
+Ks 0.025000 0.025000 0.025000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\refl_sky_SMALL.png
+
+newmtl glass_mat_glasses_lines.png
+Ns 56.862747
+Ka 1.000000 1.000000 1.000000
+Kd 0.000090 0.000090 0.000090
+Ks 0.025000 0.025000 0.025000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\glasses_lines.png
+
+newmtl interior
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 0.147843 0.097015 0.036710
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_interior.png
+
+newmtl interior_diff_interior
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 0.147843 0.097015 0.036710
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_interior.png
+
+newmtl license_plate_diff_license_plate.png
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl logo1_nor_logo1
+Ns 570.588225
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.824000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_logo1.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\nor_logo1.png
+
+newmtl logo2_diff_roller.png
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_roller.png
+map_d resources\\models\\dodge-challenger_model.blend\\textures\\challenger-logo.png
+
+newmtl logo3_diff_roller.png
+Ns 96.078443
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_logo-dodge.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_roller.png
+map_d resources\\models\\dodge-challenger_model.blend\\textures\\logo-dodge.png
+
+newmtl rear_light_diff_rearlight.png
+Ns 749.999999
+Ka 1.000000 1.000000 1.000000
+Kd 0.238490 0.000000 0.005838
+Ks 0.200000 0.200000 0.200000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\wire_rearlight.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_rearlight.png
+
+newmtl rim_nor_rim
+Ns 115.686259
+Ka 1.000000 1.000000 1.000000
+Kd 0.430175 0.430175 0.443080
+Ks 0.959333 0.959333 0.959333
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_rim_SMALL.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\nor_rim_SMALL.png
+
+newmtl roller_diff_roller.png
+Ns 56.862747
+Ka 1.000000 1.000000 1.000000
+Kd 0.006108 0.006108 0.006108
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_roller.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_roller.png
+
+newmtl tire_diff_tire.png
+Ns 17.647057
+Ka 1.000000 1.000000 1.000000
+Kd 0.001810 0.001810 0.002185
+Ks 0.680000 0.680000 0.680000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Bump resources\\models\\dodge-challenger_model.blend\\textures\\nor_tire_SMALL.png
+map_Kd resources\\models\\dodge-challenger_model.blend\\textures\\diff_tire_SMALL.png

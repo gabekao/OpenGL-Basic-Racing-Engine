@@ -188,9 +188,8 @@ void display(void)
 
 		/* Car Rendering */
 		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
-		float tireScale = 0.0075f;
-		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
-		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
+		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection, true);
+		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle + 180, 0.0f, 1.0f, 0.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection, true);
 		
 
 		if (displayBB)
@@ -516,7 +515,7 @@ int main(int argc, char** argv)
 
 	// Provided props
 	plane = new Model(&shader, &shaderBB, "models/racetrackroad.obj", "models/");
-	player = new Model(&shader, &shaderBB, "models/car.obj", "models/", true);
+	player = new Model(&shader, &shaderBB, "models/Dodge_no_wheels.obj", "models/", true);
 	box = new Model(&shader, &shaderBB, "models/cube.obj", "models/");
 	wheel = new Model(&shader, &shaderBB, "models/wheel.obj", "models/");
 	light = new Model(&shader, &shaderBB, "models/old/sphere.obj", "models/old/");
