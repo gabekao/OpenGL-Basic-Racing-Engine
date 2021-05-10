@@ -24,8 +24,8 @@
 
 using namespace std;
 
-Shader shader; // loads our vertex and fragment shaders
-Shader shaderBB; // loads our vertex and fragment shaders
+Shader shader;		// loads our model vertex and fragment shaders
+Shader shaderBB;	// loads our boundary box vertex and fragment shaders
 Shader shaderText;
 
 Car car;
@@ -41,7 +41,8 @@ glm::mat4 projection;		// projection matrix
 glm::mat4 view;				// where the camera is lookin
 glm::mat4 model;			// where the model (i.e., the myModel) is located wrt the camera
 glm::vec4 lightPosition;	// Light position
-
+glm::vec4 spotlightPosisition;
+glm::vec4 spotlightDirection;
 
 float FRAME_TIME = 16.66667;
 float previousTime = 0;
@@ -96,7 +97,8 @@ void init(void)
 
 
 	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
-
+	spotlightPosisition = glm::vec4(0.0f, 10.0f, 0.0f, 1.0f);
+	spotlightDirection = glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
 
 	initShader();
@@ -161,10 +163,10 @@ void display(void)
 		box->render(view * obj, projection, false);
 
 		// Rendering race track
-		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(2.f, 2.f, 2.f), projection, true);
+		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(1.0f, 1.0f, 1.0f), projection, true);
 
 		/* Car Rendering */
-		player->render(view * glm::rotate(180.0f, 0.0f, 1.0f, 0.0f) * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
+		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
 		float tireScale = 0.0075f;
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
@@ -228,13 +230,14 @@ bool CheckCollision()
 
 float angle = 0;
 bool spot = false;
+bool lightOn = false;
 void UseLight()
 {
 	angle += 0.002f;
 
-	glm::vec4 lightPos, leftLight;
+	glm::vec4 lightPos, spotlightPos;
 	lightPos = glm::rotate(angle, 0.0f, 0.0f, -1.0f) * lightPosition;
-
+	spotlightPos = spotlightPosisition;
 
 	shader.Activate();
 	shader.SetUniform("useCTM", useCTM); // Toggle Cook-Torrance Model
@@ -242,6 +245,43 @@ void UseLight()
 	shader.SetUniform("lightDiffuse", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	shader.SetUniform("lightSpecular", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	shader.SetUniform("lightAmbient", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+	if (spot)
+	{
+		// Set stationary spotlight uniforms (pos, dir, angle, exp)
+		shader.SetUniform("spotlightPosition", spotlightPos);
+		shader.SetUniform("spotlightDirection", spotlightDirection);
+		shader.SetUniform("cutOffAngle", 35.0f);
+		shader.SetUniform("spotlightExponent", 10.0f);
+
+		// Determines state in fragment shader
+		shader.SetUniform("spotlightActive", spot);
+		shader.SetUniform("flashOn", false);
+		shader.SetUniform("View", view);
+	}
+	else
+	{
+		// Check if light is on/off
+		if (lightOn)
+		{
+			// Set light uniforms (pos, dir, angle, exp)
+			shader.SetUniform("spotlightPosition", glm::vec4(0.f));
+			shader.SetUniform("spotlightDirection", glm::vec4(0.f, 0.f, -1.f, 0.f));
+			shader.SetUniform("cutOffAngle", 8.0f);
+			shader.SetUniform("spotlightExponent", 30.0f);
+
+			// Determines state in fragment shader (sets light on)
+			shader.SetUniform("spotlightActive", spot);
+			shader.SetUniform("flashOn", lightOn);
+		}
+		else
+		{
+			// Determines state in fragment shader (sets light off)
+			shader.SetUniform("spotlightActive", spot);
+			shader.SetUniform("flashOn", lightOn);
+		}
+	}
+
 	// Rendering light object
 	light->render(view * glm::translate(lightPos.x, lightPos.y, lightPos.z), projection, false);
 
@@ -284,6 +324,9 @@ void KeyDown(unsigned char key, int x, int y)	// Keydown events
 		break;
 	case 'o':
 		spot = !spot;
+		break;
+	case 'f':
+		lightOn = !lightOn;
 		break;
 	}
 }
