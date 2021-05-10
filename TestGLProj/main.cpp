@@ -20,11 +20,13 @@
 
 #include "Car.h"
 #include "Camera.h"
+#include "Text.h"
 
 using namespace std;
 
 Shader shader; // loads our vertex and fragment shaders
 Shader shaderBB; // loads our vertex and fragment shaders
+Shader shaderText;
 
 Car car;
 Camera camera;
@@ -33,6 +35,7 @@ Model* box;
 Model* plane;
 Model* wheel;
 Model* light;
+Text* text;
 
 glm::mat4 projection;		// projection matrix
 glm::mat4 view;				// where the camera is lookin
@@ -44,6 +47,7 @@ float FRAME_TIME = 16.66667;
 float previousTime = 0;
 bool displayBB = false;		// Display bounding box
 bool useCTM = false;		// Use Cook-Torrence Model
+bool stop = false;
 
 bool CheckCollision();
 void UseLight();
@@ -68,6 +72,9 @@ void initShader(void)
 	shaderBB.AddAttribute("vertexPosition");
 	shaderBB.AddAttribute("vertexNormal");
 
+	shaderText.InitializeFromFile("shaders/text.vert", "shaders/text.frag");
+
+
 	checkError("initShader");
 }
 
@@ -87,10 +94,16 @@ void init(void)
 	Car car;
 	Camera camera;
 
+
 	lightPosition = glm::vec4(0.0f, 100.0f, 0.0f, 1.0f);
+
+
 
 	initShader();
 	initRendering();
+
+	text = new Text(&shaderText, "fonts/Antonio-Regular.ttf");
+
 }
 
 /* This prints in the console when you start the program*/
@@ -151,7 +164,7 @@ void display(void)
 		plane->render(view * glm::translate(0.0f, -5.0f, 0.0f) * glm::scale(2.f, 2.f, 2.f), projection, true);
 
 		/* Car Rendering */
-		player->render(view * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
+		player->render(view * glm::rotate(180.0f, 0.0f, 1.0f, 0.0f) * model * glm::scale(1.0f, 1.0f, 1.0f), projection, true);	// Car
 		float tireScale = 0.0075f;
 		wheel->render(view * model * glm::translate(1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
 		wheel->render(view * model * glm::translate(-1.0f, -0.75f, -1.6f) * glm::rotate(car.curRotAngle, 0.0f, 1.0f, 0.0f) * glm::scale(tireScale, tireScale, tireScale), projection, false);
@@ -159,6 +172,13 @@ void display(void)
 		if (displayBB)
 			player->renderBB(view * model, projection);
 
+		
+		std::string spd;
+		spd = std::to_string(car.speed);
+		spd = "Speed: " + spd.substr(0, spd.find(".") + 3);
+		text->RenderText(spd, 50.0, 550.0, 0.5, glm::vec3(0.0, 0.0, 0.0));
+
+		
 
 		/* Scenery, props, and terrain rendering */
 		/*
@@ -207,13 +227,14 @@ bool CheckCollision()
 }
 
 float angle = 0;
-
+bool spot = false;
 void UseLight()
 {
 	angle += 0.002f;
 
-	glm::vec4 lightPos;
+	glm::vec4 lightPos, leftLight;
 	lightPos = glm::rotate(angle, 0.0f, 0.0f, -1.0f) * lightPosition;
+
 
 	shader.Activate();
 	shader.SetUniform("useCTM", useCTM); // Toggle Cook-Torrance Model
@@ -223,10 +244,12 @@ void UseLight()
 	shader.SetUniform("lightAmbient", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	// Rendering light object
 	light->render(view * glm::translate(lightPos.x, lightPos.y, lightPos.z), projection, false);
+
+	shader.DeActivate();
 }
 
 
-bool stop = false;
+
 /*This gets called when nothing is happening (OFTEN)*/
 void idle(void)
 {
@@ -258,6 +281,9 @@ void KeyDown(unsigned char key, int x, int y)	// Keydown events
 		break;
 	case 'm':
 		useCTM = !useCTM;
+		break;
+	case 'o':
+		spot = !spot;
 		break;
 	}
 }
@@ -324,12 +350,15 @@ int main(int argc, char** argv)
 	glutSpecialUpFunc(SpecialInputUp);
 	glEnable(GL_DEPTH_TEST);
 
+
 	// Provided props
 	plane = new Model(&shader, &shaderBB, "models/racetrackroad.obj", "models/");
 	player = new Model(&shader, &shaderBB, "models/car.obj", "models/", true);
 	box = new Model(&shader, &shaderBB, "models/cube.obj", "models/");
 	wheel = new Model(&shader, &shaderBB, "models/wheel.obj", "models/");
 	light = new Model(&shader, &shaderBB, "models/old/sphere.obj", "models/old/");
+
+	
 
 	glutMainLoop();
 

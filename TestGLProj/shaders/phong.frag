@@ -19,7 +19,8 @@ uniform float shininess;
 uniform vec4 surfaceAmbient;
 uniform vec4  surfaceEmissive;
 
-out vec4 color2;
+out vec4 color;
+
 
 float GetCTSpec()
 {
@@ -67,6 +68,7 @@ void main()
     vec4 diffuse  = Kd * surfaceDiffuse * lightDiffuse;     //vec4(1,1,1,1); // white
     vec4 specular = Ks * surfaceSpecular * lightSpecular;   //vec4(0,0,0,1); // black
     vec4 ambient  = Ka * surfaceAmbient * lightAmbient;
+    
 
-    color2 = ambient + diffuse + specular;
+    color = ambient + diffuse + specular;
 }
